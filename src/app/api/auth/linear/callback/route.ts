@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://linear-top-issue.vercel.app/";
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
@@ -34,9 +37,7 @@ export async function GET(req: NextRequest) {
   const accessToken = tokenData.access_token;
 
   // Store access token in a cookie (for demo; use secure storage in production)
-  const response = NextResponse.redirect(
-    "https://linear-top-issue.vercel.app/"
-  );
+  const response = NextResponse.redirect(SITE_URL);
   response.cookies.set("linear_access_token", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
