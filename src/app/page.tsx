@@ -17,6 +17,12 @@ export default async function Home() {
         accessToken: tokenCookie.value as string,
       });
       const viewer = await client.viewer;
+
+      // Fetch and log assigned issues
+      const assignedIssues = await viewer.assignedIssues();
+      console.log("assigned issues ::", assignedIssues.nodes);
+
+      console.log("viewer ::", viewer);
       user = { name: viewer.name, avatarUrl: viewer.avatarUrl ?? "" };
     } catch {
       // Invalid token or error
