@@ -20,6 +20,7 @@ export default async function Home() {
       const viewer = await client.viewer;
       console.log("viewer ::", viewer);
       user = { name: viewer.name, avatarUrl: viewer.avatarUrl ?? "" };
+      console.log("user ::", user);
     } catch {
       user = null;
     }
