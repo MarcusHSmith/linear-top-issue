@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { LinearClient } from "@linear/sdk";
 
 export default function WorkspaceSection({
   user,
@@ -13,6 +14,25 @@ export default function WorkspaceSection({
   workspaceUrl: string | null;
 }) {
   const [workspaceUpdated, setWorkspaceUpdated] = useState(false);
+  const [issueCount, setIssueCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function fetchIssues() {
+      // Get the access token from cookies (client-side alternative)
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("linear_access_token="))
+        ?.split("=")[1];
+      if (!token) return;
+      const client = new LinearClient({ accessToken: token });
+      const viewer = await client.viewer;
+      const assignedIssues = await viewer.assignedIssues();
+      setIssueCount(assignedIssues.nodes.length);
+      console.log("Assigned Linear Issues:", assignedIssues.nodes);
+    }
+    fetchIssues();
+  }, []);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -29,6 +49,11 @@ export default function WorkspaceSection({
 
   return (
     <>
+      {issueCount !== null && (
+        <div className="mb-2 text-center text-blue-500 font-bold text-lg">
+          Assigned Issues: {issueCount}
+        </div>
+      )}
       <div className="flex items-center gap-4 mb-4">
         <Image
           src={user.avatarUrl}
