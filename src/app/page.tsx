@@ -38,6 +38,7 @@ export default async function Home() {
               width={48}
               height={48}
               className="rounded-full border border-white/20"
+              unoptimized
             />
             <span className="font-bold text-lg">{user.name}</span>
           </div>
