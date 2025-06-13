@@ -36,14 +36,47 @@ export async function GET(req: NextRequest) {
   const tokenData = await tokenRes.json();
   const accessToken = tokenData.access_token;
 
-  // Store access token in a cookie (for demo; use secure storage in production)
-  const response = NextResponse.redirect(SITE_URL);
+  // Fetch workspace (organization) metadata using Linear SDK
+  let workspaceName = "";
+  let workspaceId = "";
+  let workspaceUrl = "";
+  try {
+    const { LinearClient } = await import("@linear/sdk");
+    const client = new LinearClient({ accessToken });
+    const org = await client.organization;
+    workspaceName = org.name;
+    workspaceId = org.id;
+    // Try to construct the workspace URL if urlKey is available
+    if (org.urlKey) {
+      workspaceUrl = `https://linear.app/${org.urlKey}`;
+    }
+  } catch {
+    // fallback: leave workspace fields empty
+  }
+
+  // Store access token and workspace metadata in cookies (for demo; use secure storage in production)
+  const response = NextResponse.redirect(SITE_URL + "?workspaceUpdated=1");
   response.cookies.set("linear_access_token", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     path: "/",
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 30, // 30 days
+  });
+  response.cookies.set("linear_workspace_name", workspaceName, {
+    path: "/",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30,
+  });
+  response.cookies.set("linear_workspace_id", workspaceId, {
+    path: "/",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30,
+  });
+  response.cookies.set("linear_workspace_url", workspaceUrl, {
+    path: "/",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30,
   });
   return response;
 }
