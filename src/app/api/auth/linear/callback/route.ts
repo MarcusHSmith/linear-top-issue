@@ -11,8 +11,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing code" }, { status: 400 });
   }
 
-  console.log("CALLBACK ::");
-
   // Exchange code for access token
   const tokenRes = await fetch("https://api.linear.app/oauth/token", {
     method: "POST",

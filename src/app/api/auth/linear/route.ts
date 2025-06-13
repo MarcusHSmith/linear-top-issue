@@ -6,8 +6,6 @@ export async function GET() {
   const state = "linear_demo_state"; // In production, generate a random string and store in session/cookie
   const scope = "read,write";
 
-  console.log("redirectUri ::", redirectUri);
-
   const params = new URLSearchParams({
     client_id: clientId!,
     redirect_uri: redirectUri!,

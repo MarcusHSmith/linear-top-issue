@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { LinearClient } from "@linear/sdk";
+import { useStartedProjects } from "../hooks/useStartedProjects";
 
 export default function WorkspaceSection({
   user,
@@ -15,6 +16,8 @@ export default function WorkspaceSection({
 }) {
   const [workspaceUpdated, setWorkspaceUpdated] = useState(false);
   const [issueCount, setIssueCount] = useState<number | null>(null);
+  const { projects: startedProjects, loading: loadingProjects } =
+    useStartedProjects();
 
   useEffect(() => {
     async function fetchIssues() {
@@ -47,11 +50,22 @@ export default function WorkspaceSection({
     }
   }, []);
 
+  useEffect(() => {
+    if (!loadingProjects) {
+      console.log("Started Linear Projects:", startedProjects);
+    }
+  }, [loadingProjects, startedProjects]);
+
   return (
     <>
       {issueCount !== null && (
         <div className="mb-2 text-center text-blue-500 font-bold text-lg">
           Assigned Issues: {issueCount}
+        </div>
+      )}
+      {!loadingProjects && startedProjects && (
+        <div className="mb-2 text-center text-green-500 font-bold text-lg">
+          Started Projects: {startedProjects.length}
         </div>
       )}
       <div className="flex items-center gap-4 mb-4">
