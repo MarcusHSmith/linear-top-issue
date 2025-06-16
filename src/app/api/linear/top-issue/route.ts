@@ -21,13 +21,13 @@ export async function GET() {
     const initiatives = await client.initiatives({ first: 10 });
     console.log("GET /api/linear/top-issue :: initiatives", initiatives);
 
-    const projects = await client.projects({ first: 10 });
+    const projects = await client.projects({ first: 5 });
     console.log("GET /api/linear/top-issue :: projects", projects);
 
-    const issues = await client.issues({ first: 10 });
+    const issues = await client.issues({ first: 2 });
     console.log("GET /api/linear/top-issue :: issues", issues);
 
-    const currentCycle = await client.cycle("current");
+    const currentCycle = await client.cycles({ first: 3 });
     console.log("GET /api/linear/top-issue :: currentCycle", currentCycle);
 
     const graphQLClient = client.client;
