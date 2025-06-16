@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useProjects } from "../hooks/useProjects";
+import { useTopIssue } from "../hooks/useTopIssue";
 
 export default function WorkspaceSection({
   user,
@@ -12,6 +13,11 @@ export default function WorkspaceSection({
   workspaceUrl: string | null;
 }) {
   const { projects, loading, error } = useProjects();
+  const {
+    topIssue,
+    loading: loadingTopIssue,
+    error: errorTopIssue,
+  } = useTopIssue();
 
   return (
     <>
@@ -63,6 +69,24 @@ export default function WorkspaceSection({
           </div>
         )
       )}
+      {/* Top Issue Section */}
+      <div className="mb-2 text-center">
+        <span className="text-sm text-neutral-400">Top Initiative:</span>
+        <div className="font-semibold">
+          {loadingTopIssue ? (
+            <span className="text-neutral-400">Loading top initiative...</span>
+          ) : errorTopIssue ? (
+            <span className="text-red-500">{errorTopIssue}</span>
+          ) : topIssue &&
+            typeof topIssue === "object" &&
+            topIssue !== null &&
+            "name" in topIssue ? (
+            <span>{(topIssue as { name: string }).name}</span>
+          ) : (
+            <span className="text-neutral-400">No top initiative found</span>
+          )}
+        </div>
+      </div>
       <a
         href="/api/auth/linear"
         className="mb-2 px-6 py-2 rounded-full bg-black text-white font-bold text-base shadow-lg hover:bg-neutral-900 transition-colors border border-white border-opacity-10"
