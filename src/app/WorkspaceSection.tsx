@@ -1,6 +1,9 @@
 "use client";
 
+import { Project } from "@linear/sdk";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { getProjects } from "./linearClient";
 
 export default function WorkspaceSection({
   user,
@@ -11,6 +14,14 @@ export default function WorkspaceSection({
   workspaceName: string | null;
   workspaceUrl: string | null;
 }) {
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    getProjects().then(setProjects);
+  }, []);
+
+  console.log("WorkspaceSection | projects ::", projects);
+
   return (
     <>
       <div className="flex items-center gap-4 mb-4">
@@ -40,6 +51,16 @@ export default function WorkspaceSection({
             ) : (
               workspaceName
             )}
+          </div>
+        </div>
+      )}
+      {projects.length > 0 && (
+        <div className="mb-2 text-center">
+          <span className="text-sm text-neutral-400">Projects:</span>
+          <div className="font-semibold">
+            {projects.map((project) => (
+              <div key={project.id}>{project.name}</div>
+            ))}
           </div>
         </div>
       )}
