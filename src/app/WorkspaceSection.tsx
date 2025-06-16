@@ -3,7 +3,7 @@
 import { Project } from "@linear/sdk";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { getProjects } from "./linearClient";
+import { getProjects } from "./linearClientFromDocument";
 
 export default function WorkspaceSection({
   user,

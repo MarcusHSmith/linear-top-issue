@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import WorkspaceSection from "./WorkspaceSection";
-import { getLinearClientFromCookies } from "./linearClient";
+import { getLinearClientFromCookies } from "./linearClientFromCookies";
 
 export default async function Home() {
   const cookieStore = await cookies();
