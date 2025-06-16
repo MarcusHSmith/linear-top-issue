@@ -27,6 +27,41 @@ export async function GET() {
     const issues = await client.issues({ first: 10 });
     console.log("GET /api/linear/top-issue :: issues", issues);
 
+    const currentCycle = await client.cycle("current");
+    console.log("GET /api/linear/top-issue :: currentCycle", currentCycle);
+
+    const graphQLClient = client.client;
+    const teams = await graphQLClient.rawRequest(
+      `
+      query Teams {
+        teams {
+          nodes {
+            id
+            name
+            members {
+              nodes {
+                id
+                name
+                displayName
+                email
+                avatarUrl
+                issues {
+                  nodes {
+                    id
+                    title
+                    url
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      `,
+      {}
+    );
+    console.log("GET /api/linear/top-issue :: teams", teams);
+
     // For now, just return the first initiative as the 'top issue'
     const topIssue = initiatives.nodes[0] || null;
     return NextResponse.json({ topIssue });
