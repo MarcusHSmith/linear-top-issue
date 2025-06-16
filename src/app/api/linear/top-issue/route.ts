@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { LinearClient } from "@linear/sdk";
+import { LinearClient, LinearDocument } from "@linear/sdk";
 import { cookies } from "next/headers";
 
 export async function GET() {
@@ -21,7 +21,10 @@ export async function GET() {
     const initiatives = await client.initiatives({ first: 10 });
     console.log("GET /api/linear/top-issue :: initiatives", initiatives);
 
-    const projects = await client.projects({ first: 5 });
+    const projects = await client.projects({
+      first: 5,
+      orderBy: LinearDocument.PaginationOrderBy.UpdatedAt,
+    });
     console.log("GET /api/linear/top-issue :: projects", projects);
 
     const issues = await client.issues({ first: 2 });
@@ -40,6 +43,14 @@ export async function GET() {
           nodes {
             id
             name
+            members {
+              nodes {
+                id
+                email
+                name
+                displayName
+              }
+            }
           }
         }
       }
@@ -47,8 +58,8 @@ export async function GET() {
         {}
       )
       .then((res) => {
-        console.log("GET /api/linear/top-issue team :: res", res);
-        return res;
+        console.log("GET /api/linear/top-issue team :: res", res.data);
+        return res.data;
       })
       .catch((err) => {
         console.log("GET /api/linear/top-issue team :: err", err);
