@@ -1,7 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Project } from "@linear/sdk";
 import Image from "next/image";
+import { useProjects } from "../hooks/useProjects";
 
 export default function WorkspaceSection({
   user,
@@ -12,29 +11,7 @@ export default function WorkspaceSection({
   workspaceName: string | null;
   workspaceUrl: string | null;
 }) {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchProjects() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch("/api/linear/get-projects");
-        if (!res.ok) {
-          throw new Error("Failed to fetch projects");
-        }
-        const data = await res.json();
-        setProjects(data.projects || []);
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Unknown error");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchProjects();
-  }, []);
+  const { projects, loading, error } = useProjects();
 
   return (
     <>
