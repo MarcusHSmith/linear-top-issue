@@ -1,23 +1,16 @@
 import { cookies } from "next/headers";
-import { LinearClient } from "@linear/sdk";
 import WorkspaceSection from "./WorkspaceSection";
+import { getLinearClientFromCookies } from "./linearClient";
 
 export default async function Home() {
   const cookieStore = await cookies();
-  const tokenCookie = cookieStore.get("linear_access_token");
   const workspaceName = cookieStore.get("linear_workspace_name")?.value || null;
   const workspaceUrl = cookieStore.get("linear_workspace_url")?.value || null;
   let user: { name: string; avatarUrl: string } | null = null;
 
-  if (
-    tokenCookie &&
-    typeof tokenCookie.value === "string" &&
-    tokenCookie.value
-  ) {
+  const client = await getLinearClientFromCookies();
+  if (client) {
     try {
-      const client = new LinearClient({
-        accessToken: tokenCookie.value as string,
-      });
       const viewer = await client.viewer;
       user = { name: viewer.name, avatarUrl: viewer.avatarUrl ?? "" };
     } catch {
