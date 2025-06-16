@@ -1,24 +1,12 @@
 import { cookies } from "next/headers";
 import WorkspaceSection from "./WorkspaceSection";
-import { getLinearClientFromCookies } from "./linearClientFromCookies";
 
 export default async function Home() {
   const cookieStore = await cookies();
   const workspaceName = cookieStore.get("linear_workspace_name")?.value || null;
   const workspaceUrl = cookieStore.get("linear_workspace_url")?.value || null;
-  let user: { name: string; avatarUrl: string } | null = null;
 
-  const client = await getLinearClientFromCookies();
-  if (client) {
-    try {
-      const viewer = await client.viewer;
-      user = { name: viewer.name, avatarUrl: viewer.avatarUrl ?? "" };
-    } catch {
-      user = null;
-    }
-  }
-
-  // Workspace update confirmation will be handled in a client component
+  const user = null;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 font-[family-name:var(--font-geist-sans)]">

@@ -1,9 +1,7 @@
 "use client";
-
+import { useEffect, useState } from "react";
 import { Project } from "@linear/sdk";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { getProjects } from "./linearClientFromDocument";
 
 export default function WorkspaceSection({
   user,
@@ -15,12 +13,28 @@ export default function WorkspaceSection({
   workspaceUrl: string | null;
 }) {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getProjects().then(setProjects);
+    async function fetchProjects() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/linear/get-projects");
+        if (!res.ok) {
+          throw new Error("Failed to fetch projects");
+        }
+        const data = await res.json();
+        setProjects(data.projects || []);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProjects();
   }, []);
-
-  console.log("WorkspaceSection | projects ::", projects);
 
   return (
     <>
@@ -54,15 +68,23 @@ export default function WorkspaceSection({
           </div>
         </div>
       )}
-      {projects.length > 0 && (
-        <div className="mb-2 text-center">
-          <span className="text-sm text-neutral-400">Projects:</span>
-          <div className="font-semibold">
-            {projects.map((project) => (
-              <div key={project.id}>{project.name}</div>
-            ))}
-          </div>
+      {loading ? (
+        <div className="mb-2 text-center text-neutral-400">
+          Loading projects...
         </div>
+      ) : error ? (
+        <div className="mb-2 text-center text-red-500">{error}</div>
+      ) : (
+        projects.length > 0 && (
+          <div className="mb-2 text-center">
+            <span className="text-sm text-neutral-400">Projects:</span>
+            <div className="font-semibold">
+              {projects.map((project) => (
+                <div key={project.id}>{project.name}</div>
+              ))}
+            </div>
+          </div>
+        )
       )}
       <a
         href="/api/auth/linear"
