@@ -1,9 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { LinearClient } from "@linear/sdk";
-import { useStartedProjects } from "../hooks/useStartedProjects";
 
 export default function WorkspaceSection({
   user,
@@ -14,60 +11,8 @@ export default function WorkspaceSection({
   workspaceName: string | null;
   workspaceUrl: string | null;
 }) {
-  const [workspaceUpdated, setWorkspaceUpdated] = useState(false);
-  const [issueCount, setIssueCount] = useState<number | null>(null);
-  const { projects: startedProjects, loading: loadingProjects } =
-    useStartedProjects();
-
-  useEffect(() => {
-    async function fetchIssues() {
-      // Get the access token from cookies (client-side alternative)
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("linear_access_token="))
-        ?.split("=")[1];
-      if (!token) return;
-      const client = new LinearClient({ accessToken: token });
-      const viewer = await client.viewer;
-      const assignedIssues = await viewer.assignedIssues();
-      setIssueCount(assignedIssues.nodes.length);
-      console.log("Assigned Linear Issues:", assignedIssues.nodes);
-    }
-    fetchIssues();
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("workspaceUpdated") === "1") {
-        setWorkspaceUpdated(true);
-        // Optionally, remove the param from the URL after showing the message
-        params.delete("workspaceUpdated");
-        const newUrl =
-          window.location.pathname + (params.toString() ? `?${params}` : "");
-        window.history.replaceState({}, document.title, newUrl);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!loadingProjects) {
-      console.log("Started Linear Projects:", startedProjects);
-    }
-  }, [loadingProjects, startedProjects]);
-
   return (
     <>
-      {issueCount !== null && (
-        <div className="mb-2 text-center text-blue-500 font-bold text-lg">
-          Assigned Issues: {issueCount}
-        </div>
-      )}
-      {!loadingProjects && startedProjects && (
-        <div className="mb-2 text-center text-green-500 font-bold text-lg">
-          Started Projects: {startedProjects.length}
-        </div>
-      )}
       <div className="flex items-center gap-4 mb-4">
         <Image
           src={user.avatarUrl}
@@ -109,11 +54,6 @@ export default function WorkspaceSection({
         To connect a different workspace, switch workspaces in Linear before
         authorizing.
       </div>
-      {workspaceUpdated && (
-        <div className="text-green-400 font-semibold text-sm mt-2">
-          Workspace updated successfully!
-        </div>
-      )}
     </>
   );
 }
