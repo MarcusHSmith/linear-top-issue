@@ -2,6 +2,10 @@ import { LinearClient } from "@linear/sdk";
 
 export async function getLinearClientFromDocument(): Promise<LinearClient | null> {
   console.log("getLinearClientFromDocument ::");
+  console.log(
+    "getLinearClientFromDocument :: document.cookie",
+    document.cookie
+  );
   const token = document.cookie
     .split("; ")
     .find((row) => row.startsWith("linear_access_token="))
