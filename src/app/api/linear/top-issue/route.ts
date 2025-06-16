@@ -58,14 +58,16 @@ export async function GET() {
         {}
       )
       .then((res) => {
-        console.log("GET /api/linear/top-issue team :: res", res.data);
         return res.data;
       })
       .catch((err) => {
         console.log("GET /api/linear/top-issue team :: err", err);
         return err;
       });
-    console.log("GET /api/linear/top-issue :: teams", teams);
+    console.log(
+      "GET /api/linear/top-issue :: teams",
+      JSON.stringify(teams, null, 2)
+    );
 
     // For now, just return the first initiative as the 'top issue'
     const topIssue = initiatives.nodes[0] || null;
