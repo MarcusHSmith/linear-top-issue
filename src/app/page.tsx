@@ -6,7 +6,33 @@ export default async function Home() {
   const workspaceName = cookieStore.get("linear_workspace_name")?.value || null;
   const workspaceUrl = cookieStore.get("linear_workspace_url")?.value || null;
 
-  const user = null;
+  let user = null;
+  try {
+    console.log("GET /api/linear/get-user ::");
+    console.log("GET /api/linear/get-user :: cookieStore", cookieStore);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE_URL || ""}/api/linear/get-user`,
+      {
+        headers: {
+          Cookie: cookieStore
+            .getAll()
+            .map((c) => `${c.name}=${c.value}`)
+            .join("; "),
+        },
+        cache: "no-store",
+      }
+    );
+    if (res.ok) {
+      console.log("GET /api/linear/get-user :: res.ok");
+      const data = await res.json();
+      console.log("GET /api/linear/get-user :: data", data);
+      user = { name: data.name, avatarUrl: data.avatarUrl };
+    } else {
+      console.log("GET /api/linear/get-user :: res.ok", res.ok);
+    }
+  } catch (error) {
+    console.log("GET /api/linear/get-user :: error", error);
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 font-[family-name:var(--font-geist-sans)]">
