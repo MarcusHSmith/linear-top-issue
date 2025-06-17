@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Linear Top Issue",
   description: "Find the most important issue for your team",
+  icons: {
+    icon: "images/favicon-white.ico",
+  },
 };
 
 export default function RootLayout({
