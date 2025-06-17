@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { LinearClient, LinearDocument } from "@linear/sdk";
+import { LinearClient } from "@linear/sdk";
 import { cookies } from "next/headers";
 
 async function getTeams(client: LinearClient) {
@@ -111,7 +111,7 @@ async function getTopIssuesFromProjects({
   const issuesQuery = await graphQLClient
     .rawRequest(
       `
-    query Projects($topProjects: [ID!]!) {
+    query Projects($projectIds: [ID!]!) {
       projects(filter: {id: {in: $projectIds}}) {
         nodes {
           issues(first: 10) {
@@ -143,6 +143,42 @@ async function getTopIssuesFromProjects({
   return issuesQuery;
 }
 
+async function getDetailsFromIssue({
+  client,
+  issueId,
+}: {
+  client: LinearClient;
+  issueId: string;
+}) {
+  const graphQLClient = client.client;
+  graphQLClient.setHeader("my-header", "value");
+
+  const issueQuery = await graphQLClient.rawRequest(
+    `
+    query Issue($issueId: String!) {
+      issue(id: $issueId) {
+        id,
+        project {
+          name
+          id
+          slugId
+          initiatives {
+            nodes {
+              name
+              id
+              slugId
+            }
+          }
+        }
+      }
+    }
+    `,
+    { issueId }
+  );
+
+  return issueQuery;
+}
+
 export async function GET() {
   const cookieStore = await cookies();
   const token = cookieStore.get("linear_access_token")?.value;
@@ -158,18 +194,6 @@ export async function GET() {
     const client = new LinearClient({ accessToken: token });
     const initiatives = await client.initiatives({ first: 10 });
     console.log("GET /api/linear/top-issue :: initiatives", initiatives);
-
-    const projects = await client.projects({
-      first: 5,
-      orderBy: LinearDocument.PaginationOrderBy.UpdatedAt,
-    });
-    console.log("GET /api/linear/top-issue :: projects", projects);
-
-    const issues = await client.issues({ first: 2 });
-    console.log("GET /api/linear/top-issue :: issues", issues);
-
-    const currentCycle = await client.cycles({ first: 3 });
-    console.log("GET /api/linear/top-issue :: currentCycle", currentCycle);
 
     const topProjectIdsFromInitiatives = await getTopProjectsFromInitiatives({
       client,
@@ -196,7 +220,22 @@ export async function GET() {
 
     // For now, just return the first initiative as the 'top issue'
     const topIssue = initiatives.nodes[0] || null;
-    return NextResponse.json({ topIssue });
+
+    console.log(
+      "GET /api/linear/top-issue :: topIssue",
+      JSON.stringify(topIssue, null, 2)
+    );
+
+    const detailsFromIssue = await getDetailsFromIssue({
+      client,
+      issueId: topIssue.id,
+    });
+    console.log(
+      "GET /api/linear/top-issue :: detailsFromIssue",
+      JSON.stringify(detailsFromIssue, null, 2)
+    );
+
+    return NextResponse.json({ detailsFromIssue });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch top issue", details: (error as Error).message },
