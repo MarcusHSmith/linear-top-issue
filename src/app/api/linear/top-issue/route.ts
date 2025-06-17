@@ -193,7 +193,8 @@ async function getIssuesWithoutContext({ client }: { client: LinearClient }) {
           }
       }, orderBy: updatedAt) {
         nodes {
-          id
+          id,
+          prioritySortOrder
         }
       }
     }
@@ -213,11 +214,15 @@ async function getIssuesWithoutContext({ client }: { client: LinearClient }) {
     JSON.stringify(issueQuery, null, 2)
   );
 
-  return (
+  const sortedIssues = (
     issueQuery as {
-      issues: { nodes: Array<{ id: string }> };
+      issues: { nodes: Array<{ id: string; prioritySortOrder: number }> };
     }
-  ).issues.nodes.map((issue) => issue.id);
+  ).issues.nodes
+    .sort((a, b) => b.prioritySortOrder - a.prioritySortOrder)
+    .map((issue) => issue.id);
+
+  return sortedIssues;
 }
 
 async function getDetailsFromIssue({
