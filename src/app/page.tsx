@@ -66,6 +66,14 @@ export default async function Home() {
         )}
         {/* Add your custom content here */}
       </main>
+      <footer className="w-full flex justify-center mt-8">
+        <a
+          href="/about"
+          className="text-neutral-400 hover:text-white text-sm underline underline-offset-2"
+        >
+          About
+        </a>
+      </footer>
     </div>
   );
 }
