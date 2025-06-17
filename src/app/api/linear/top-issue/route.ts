@@ -99,12 +99,12 @@ async function getTopProjectsFromInitiatives({
 
 async function getTopIssuesFromProjects({
   client,
-  topProjects,
+  projectIds,
 }: {
   client: LinearClient;
-  topProjects: { id: string }[];
+  projectIds: string[];
 }) {
-  console.log("getTopIssuesFromProjects :: topProjects", topProjects);
+  console.log("getTopIssuesFromProjects :: projectIds", projectIds);
   const graphQLClient = client.client;
   graphQLClient.setHeader("my-header", "value");
 
@@ -112,7 +112,7 @@ async function getTopIssuesFromProjects({
     .rawRequest(
       `
     query Projects($topProjects: [ID!]!) {
-      projects(filter: {id: {in: $topProjects}}) {
+      projects(filter: {id: {in: $projectIds}}) {
         nodes {
           issues(first: 10) {
             nodes {
@@ -130,7 +130,7 @@ async function getTopIssuesFromProjects({
       }
     }
     `,
-      { topProjects }
+      { projectIds }
     )
     .then((res) => {
       return res.data;
@@ -181,7 +181,7 @@ export async function GET() {
 
     const topIssuesFromProjects = await getTopIssuesFromProjects({
       client,
-      topProjects: topProjectIdsFromInitiatives.map((id) => ({ id })),
+      projectIds: topProjectIdsFromInitiatives,
     });
     console.log(
       "GET /api/linear/top-issue :: topIssuesFromProjects",
