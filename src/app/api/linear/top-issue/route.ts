@@ -51,7 +51,7 @@ async function getTopProjectsFromInitiatives({
     .rawRequest(
       `
   query Initiatives() {
-    initiatives(orderBy: updatedAt) {
+    initiatives() {
       nodes {
         icon
         id
@@ -80,6 +80,50 @@ async function getTopProjectsFromInitiatives({
       return err;
     });
   return initiativesQuery;
+}
+
+async function getTopIssuesFromProjects({
+  client,
+  topProjects,
+}: {
+  client: LinearClient;
+  topProjects: { id: string }[];
+}) {
+  const graphQLClient = client.client;
+  graphQLClient.setHeader("my-header", "value");
+
+  const issuesQuery = await graphQLClient
+    .rawRequest(
+      `
+    query Projects($topProjects: [ID!]!) {
+      projects(filter: {id: {in: $topProjects}}) {
+        nodes {
+          issues(orderBy: updatedAt) {
+            nodes {
+              id
+              title
+              assignee {
+                name
+                id
+                displayName
+                statusLabel
+              }
+            }
+          }
+        }
+      }
+    }
+    `,
+      { topProjects }
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      console.log("GET /api/linear/top-issue issuesQuery :: err", err);
+      return err;
+    });
+  return issuesQuery;
 }
 
 export async function GET() {
@@ -116,6 +160,19 @@ export async function GET() {
     console.log(
       "GET /api/linear/top-issue :: topProjectsFromInitiatives",
       JSON.stringify(topProjectsFromInitiatives, null, 2)
+    );
+
+    const topIssuesFromProjects = await getTopIssuesFromProjects({
+      client,
+      topProjects: [
+        {
+          id: "123",
+        },
+      ],
+    });
+    console.log(
+      "GET /api/linear/top-issue :: topIssuesFromProjects",
+      JSON.stringify(topIssuesFromProjects, null, 2)
     );
 
     const teams = await getTeams(client);
