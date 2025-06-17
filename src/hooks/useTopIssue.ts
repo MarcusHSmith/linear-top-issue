@@ -15,7 +15,7 @@ export function useTopIssue() {
           throw new Error("Failed to fetch top issue");
         }
         const data = await res.json();
-        setTopIssue(data.topIssue || null);
+        setTopIssue(data || null);
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {

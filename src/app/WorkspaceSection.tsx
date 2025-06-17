@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import { useProjects } from "../hooks/useProjects";
 import { useTopIssue } from "../hooks/useTopIssue";
 import TopIssueBox from "./TopIssueBox";
 
@@ -13,7 +12,6 @@ export default function WorkspaceSection({
   workspaceName: string | null;
   workspaceUrl: string | null;
 }) {
-  const { projects, loading, error } = useProjects();
   const {
     topIssue,
     loading: loadingTopIssue,
@@ -58,30 +56,12 @@ export default function WorkspaceSection({
           </div>
         </div>
       )}
-      {loading ? (
-        <div className="mb-2 text-center text-neutral-400">
-          Loading projects...
-        </div>
-      ) : error ? (
-        <div className="mb-2 text-center text-red-500">{error}</div>
-      ) : (
-        projects.length > 0 && (
-          <div className="mb-2 text-center">
-            <span className="text-sm text-neutral-400">Projects:</span>
-            <div className="font-semibold">
-              {projects.map((project) => (
-                <div key={project.id}>{project.name}</div>
-              ))}
-            </div>
-          </div>
-        )
-      )}
       {/* Top Issue Section */}
       <div className="mb-2 text-center">
-        <span className="text-sm text-neutral-400">Top Initiative:</span>
+        <span className="text-sm text-neutral-400">Top Issue:</span>
         <div className="font-semibold">
           {loadingTopIssue ? (
-            <span className="text-neutral-400">Loading top initiative...</span>
+            <span className="text-neutral-400">Loading top issue...</span>
           ) : errorTopIssue ? (
             <span className="text-red-500">{errorTopIssue}</span>
           ) : topIssue &&
