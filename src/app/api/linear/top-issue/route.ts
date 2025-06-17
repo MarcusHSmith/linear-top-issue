@@ -50,8 +50,8 @@ async function getTopProjectsFromInitiatives({
   const initiativesQuery = await graphQLClient
     .rawRequest(
       `
-  query Initiatives() {
-    initiatives() {
+  query Initiatives {
+    initiatives {
       nodes {
         icon
         id
@@ -98,7 +98,7 @@ async function getTopIssuesFromProjects({
     query Projects($topProjects: [ID!]!) {
       projects(filter: {id: {in: $topProjects}}) {
         nodes {
-          issues(orderBy: updatedAt) {
+          issues(first: 10) {
             nodes {
               id
               title
