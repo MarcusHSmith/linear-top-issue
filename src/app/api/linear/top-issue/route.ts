@@ -46,12 +46,12 @@ async function getTopProjectsFromInitiatives({
   const graphQLClient = client.client;
   graphQLClient.setHeader("my-header", "value");
 
-  // Find top issue starting from Initiatives
+  // TODO filter by status
   const initiativesQuery = await graphQLClient
     .rawRequest(
       `
   query Initiatives() {
-    initiatives(orderBy: updatedAt,filter: {status: {in: ["Active"]}}) {
+    initiatives(orderBy: updatedAt) {
       nodes {
         icon
         id
