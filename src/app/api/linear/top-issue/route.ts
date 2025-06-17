@@ -38,7 +38,11 @@ async function getTeams(client: LinearClient) {
   return teams;
 }
 
-async function getTopIssueFromInitiatives(client: LinearClient) {
+async function getTopProjectsFromInitiatives({
+  client,
+}: {
+  client: LinearClient;
+}) {
   const graphQLClient = client.client;
   graphQLClient.setHeader("my-header", "value");
 
@@ -46,8 +50,8 @@ async function getTopIssueFromInitiatives(client: LinearClient) {
   const initiativesQuery = await graphQLClient
     .rawRequest(
       `
-  query Initiatives {
-    initiatives {
+  query Initiatives() {
+    initiatives(orderBy: updatedAt,filter: {status: {in: ["Active"]}}) {
       nodes {
         icon
         id
@@ -57,21 +61,8 @@ async function getTopIssueFromInitiatives(client: LinearClient) {
             status {
               id
             }
-            icon
             name
             id
-            issues {
-              nodes {
-                id
-                title
-                assignee {
-                  name
-                  id
-                  displayName
-                  statusLabel
-                }
-              }
-            }
           }
         }
       }
@@ -92,10 +83,8 @@ async function getTopIssueFromInitiatives(client: LinearClient) {
 }
 
 export async function GET() {
-  console.log("GET /api/linear/top-issue ::");
   const cookieStore = await cookies();
   const token = cookieStore.get("linear_access_token")?.value;
-  console.log("GET /api/linear/top-issue :: token", token);
 
   if (!token) {
     return NextResponse.json(
@@ -106,7 +95,6 @@ export async function GET() {
 
   try {
     const client = new LinearClient({ accessToken: token });
-    console.log("GET /api/linear/top-issue :: client", client);
     const initiatives = await client.initiatives({ first: 10 });
     console.log("GET /api/linear/top-issue :: initiatives", initiatives);
 
@@ -122,10 +110,12 @@ export async function GET() {
     const currentCycle = await client.cycles({ first: 3 });
     console.log("GET /api/linear/top-issue :: currentCycle", currentCycle);
 
-    const topIssueFromInitiatives = await getTopIssueFromInitiatives(client);
+    const topProjectsFromInitiatives = await getTopProjectsFromInitiatives({
+      client,
+    });
     console.log(
-      "GET /api/linear/top-issue :: topIssueFromInitiatives",
-      JSON.stringify(topIssueFromInitiatives, null, 2)
+      "GET /api/linear/top-issue :: topProjectsFromInitiatives",
+      JSON.stringify(topProjectsFromInitiatives, null, 2)
     );
 
     const teams = await getTeams(client);
