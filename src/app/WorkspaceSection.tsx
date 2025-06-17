@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useProjects } from "../hooks/useProjects";
 import { useTopIssue } from "../hooks/useTopIssue";
+import TopIssueBox from "./TopIssueBox";
 
 export default function WorkspaceSection({
   user,
@@ -80,10 +81,12 @@ export default function WorkspaceSection({
           ) : topIssue &&
             typeof topIssue === "object" &&
             topIssue !== null &&
-            "name" in topIssue ? (
-            <span>{(topIssue as { name: string }).name}</span>
+            "detailsFromIssue" in topIssue ? (
+            <TopIssueBox
+              topIssue={topIssue as import("./TopIssueBox").TopIssue}
+            />
           ) : (
-            <span className="text-neutral-400">No top initiative found</span>
+            <span className="text-neutral-400">No top issue found</span>
           )}
         </div>
       </div>
