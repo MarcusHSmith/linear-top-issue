@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import WorkspaceSection from "./WorkspaceSection";
+import Image from "next/image";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -33,7 +34,20 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 items-center">
+      <main className="flex flex-col gap-8 items-center w-full">
+        {/* Site header with logo and title */}
+        <header className="flex items-center gap-3 mb-6 mt-2">
+          <Image
+            src="/images/logo-white.png"
+            alt="Linear Top Issue Logo"
+            width={40}
+            height={40}
+            priority
+          />
+          <span className="text-2xl font-bold tracking-wide select-none">
+            Linear Top Issue
+          </span>
+        </header>
         {/* User info or Connect button */}
         {user ? (
           <WorkspaceSection
