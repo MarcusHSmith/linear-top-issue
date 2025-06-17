@@ -2,6 +2,95 @@ import { NextResponse } from "next/server";
 import { LinearClient, LinearDocument } from "@linear/sdk";
 import { cookies } from "next/headers";
 
+async function getTeams(client: LinearClient) {
+  const graphQLClient = client.client;
+  graphQLClient.setHeader("my-header", "value");
+
+  const teams = await graphQLClient
+    .rawRequest(
+      `
+  query Teams {
+    teams {
+      nodes {
+        id
+        name
+        members {
+          nodes {
+            id
+            email
+            name
+            displayName
+          }
+        }
+      }
+    }
+  }
+  `,
+      {}
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      console.log("GET /api/linear/top-issue team :: err", err);
+      return err;
+    });
+  return teams;
+}
+
+async function getTopIssueFromInitiatives(client: LinearClient) {
+  const graphQLClient = client.client;
+  graphQLClient.setHeader("my-header", "value");
+
+  // Find top issue starting from Initiatives
+  const initiativesQuery = await graphQLClient
+    .rawRequest(
+      `
+  query Initiatives {
+    initiatives {
+      nodes {
+        icon
+        id
+        name
+        projects {
+          nodes {
+            status {
+              id
+            }
+            icon
+            name
+            id
+            issues {
+              nodes {
+                id
+                title
+                assignee {
+                  name
+                  id
+                  displayName
+                  statusLabel
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  `,
+      {}
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      console.log("GET /api/linear/top-issue initiativesQuery :: err", err);
+      return err;
+    });
+  return initiativesQuery;
+}
+
 export async function GET() {
   console.log("GET /api/linear/top-issue ::");
   const cookieStore = await cookies();
@@ -33,37 +122,13 @@ export async function GET() {
     const currentCycle = await client.cycles({ first: 3 });
     console.log("GET /api/linear/top-issue :: currentCycle", currentCycle);
 
-    const graphQLClient = client.client;
-    graphQLClient.setHeader("my-header", "value");
-    const teams = await graphQLClient
-      .rawRequest(
-        `
-      query Teams {
-        teams {
-          nodes {
-            id
-            name
-            members {
-              nodes {
-                id
-                email
-                name
-                displayName
-              }
-            }
-          }
-        }
-      }
-      `,
-        {}
-      )
-      .then((res) => {
-        return res.data;
-      })
-      .catch((err) => {
-        console.log("GET /api/linear/top-issue team :: err", err);
-        return err;
-      });
+    const topIssueFromInitiatives = await getTopIssueFromInitiatives(client);
+    console.log(
+      "GET /api/linear/top-issue :: topIssueFromInitiatives",
+      JSON.stringify(topIssueFromInitiatives, null, 2)
+    );
+
+    const teams = await getTeams(client);
     console.log(
       "GET /api/linear/top-issue :: teams",
       JSON.stringify(teams, null, 2)
