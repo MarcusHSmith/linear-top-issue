@@ -42,7 +42,7 @@ async function getTopProjectsFromInitiatives({
   client,
 }: {
   client: LinearClient;
-}) {
+}): Promise<string[]> {
   const graphQLClient = client.client;
   graphQLClient.setHeader("my-header", "value");
 
@@ -79,7 +79,22 @@ async function getTopProjectsFromInitiatives({
       console.log("GET /api/linear/top-issue initiativesQuery :: err", err);
       return err;
     });
-  return initiativesQuery;
+
+  const projectIds = (
+    initiativesQuery as {
+      initiatives: {
+        nodes: Array<{
+          id: string;
+          projects: { nodes: Array<{ id: string }> };
+        }>;
+      };
+    }
+  ).initiatives?.nodes?.flatMap((initiative) => {
+    console.log("initiative ++", initiative);
+    return initiative.projects?.nodes?.map((project) => project.id);
+  });
+
+  return projectIds;
 }
 
 async function getTopIssuesFromProjects({
@@ -89,6 +104,7 @@ async function getTopIssuesFromProjects({
   client: LinearClient;
   topProjects: { id: string }[];
 }) {
+  console.log("getTopIssuesFromProjects :: topProjects", topProjects);
   const graphQLClient = client.client;
   graphQLClient.setHeader("my-header", "value");
 
@@ -123,6 +139,7 @@ async function getTopIssuesFromProjects({
       console.log("GET /api/linear/top-issue issuesQuery :: err", err);
       return err;
     });
+
   return issuesQuery;
 }
 
@@ -154,21 +171,17 @@ export async function GET() {
     const currentCycle = await client.cycles({ first: 3 });
     console.log("GET /api/linear/top-issue :: currentCycle", currentCycle);
 
-    const topProjectsFromInitiatives = await getTopProjectsFromInitiatives({
+    const topProjectIdsFromInitiatives = await getTopProjectsFromInitiatives({
       client,
     });
     console.log(
-      "GET /api/linear/top-issue :: topProjectsFromInitiatives",
-      JSON.stringify(topProjectsFromInitiatives, null, 2)
+      "GET /api/linear/top-issue :: topProjectIdsFromInitiatives",
+      JSON.stringify(topProjectIdsFromInitiatives, null, 2)
     );
 
     const topIssuesFromProjects = await getTopIssuesFromProjects({
       client,
-      topProjects: [
-        {
-          id: "123",
-        },
-      ],
+      topProjects: topProjectIdsFromInitiatives.map((id) => ({ id })),
     });
     console.log(
       "GET /api/linear/top-issue :: topIssuesFromProjects",
