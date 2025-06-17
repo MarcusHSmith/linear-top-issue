@@ -142,6 +142,7 @@ async function getTopIssuesFromProjects({
           }, orderBy: updatedAt) {
             nodes {
               id
+              prioritySortOrder
             }
           }
         }
@@ -166,11 +167,15 @@ async function getTopIssuesFromProjects({
 
   const topIssueIds = (
     issuesQuery as {
-      projects: { nodes: Array<{ issues: { nodes: Array<{ id: string }> } }> };
+      projects: {
+        nodes: Array<{
+          issues: { nodes: Array<{ id: string; prioritySortOrder: number }> };
+        }>;
+      };
     }
-  ).projects.nodes.flatMap((project) =>
-    project.issues.nodes.map((issue) => issue.id)
-  );
+  ).projects.nodes
+    .sort((a, b) => b.issues.nodes.length - a.issues.nodes.length)
+    .flatMap((project) => project.issues.nodes.map((issue) => issue.id));
 
   console.log("GET /api/linear/top-issue :: topIssueIds", topIssueIds);
 
