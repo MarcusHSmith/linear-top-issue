@@ -168,15 +168,26 @@ async function getDetailsFromIssue({
     query Issue($issueId: String!) {
       issue(id: $issueId) {
         id,
+        url,
+        title
+        assignee {
+          id,
+          avatarUrl
+          displayName
+        }
         project {
           name
           id
           slugId
+          icon
+          url
           initiatives {
             nodes {
               name
+              icon
               id
               slugId
+              url
             }
           }
         }

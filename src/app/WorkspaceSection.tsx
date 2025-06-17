@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useTopIssue } from "../hooks/useTopIssue";
-import TopIssueBox from "./TopIssueBox";
+import TopIssueVisualizer from "./TopIssueBox";
 
 export default function WorkspaceSection({
   user,
@@ -68,7 +68,7 @@ export default function WorkspaceSection({
             typeof topIssue === "object" &&
             topIssue !== null &&
             "detailsFromIssue" in topIssue ? (
-            <TopIssueBox
+            <TopIssueVisualizer
               topIssue={topIssue as import("./TopIssueBox").TopIssue}
             />
           ) : (

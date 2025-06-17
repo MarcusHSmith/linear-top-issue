@@ -26,195 +26,137 @@ export type TopIssue = {
   };
 };
 
-export default function TopIssueBox({ topIssue }: { topIssue: TopIssue }) {
+export default function TopIssueVisualizer({
+  topIssue,
+}: {
+  topIssue: TopIssue;
+}) {
+  // Stubbed data for development
+  topIssue = {
+    detailsFromIssue: {
+      issue: {
+        id: "e553f28d-c265-4ff7-b5d7-e72661b78937",
+        project: {
+          name: "Create a shared Db for user info",
+          id: "6a1c006d-cdcd-488a-a49d-a18ee120f094",
+          slugId: "4129dd050a3a",
+          initiatives: {
+            nodes: [
+              {
+                name: "Store User info in db",
+                id: "019ff3f6-b9a6-44d1-a350-e1a31fe070cb",
+                slugId: "32c08c63ef57",
+              },
+            ],
+          },
+        },
+      },
+    },
+  };
+
   const issue = topIssue?.detailsFromIssue?.issue;
   if (!issue) return null;
 
   const project = issue.project;
   const initiative = project?.initiatives?.nodes?.[0];
 
-  // Sectors: Initiative (top left), Project (bottom right), Issue (top right)
-  // If only issue, show one sector; if project, two; if initiative, three.
-  // We'll use SVG for the circular/sector layout.
-
-  // Determine which sectors to show
-  const sectors = [
-    { key: "initiative", label: initiative?.name, present: !!initiative },
-    { key: "project", label: project?.name, present: !!project },
-    {
-      key: "issue",
-      label: issue.title || issue.name || issue.id,
-      present: true,
-    },
-  ].filter((s) => s.present);
-
-  // Angles for sectors (equal split)
-  const sectorAngle = 360 / sectors.length;
-
-  // Helper to describe an SVG arc sector
-  function describeArc(
-    cx: number,
-    cy: number,
-    r: number,
-    startAngle: number,
-    endAngle: number
-  ) {
-    const start = polarToCartesian(cx, cy, r, endAngle);
-    const end = polarToCartesian(cx, cy, r, startAngle);
-    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-    return [
-      `M ${cx} ${cy}`,
-      `L ${start.x} ${start.y}`,
-      `A ${r} ${r} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`,
-      "Z",
-    ].join(" ");
-  }
-
-  function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
-    const rad = ((angle - 90) * Math.PI) / 180.0;
-    return {
-      x: cx + r * Math.cos(rad),
-      y: cy + r * Math.sin(rad),
-    };
-  }
-
   // Colors and style
   const bg = "#18191b";
   const line = "#e5e7eb";
   const accent = "#fff";
-  const labelStyle: React.CSSProperties = {
-    fill: line,
-    fontSize: 16,
+  const boxStyle: React.CSSProperties = {
+    background: "#232325",
+    border: `1.5px solid ${line}`,
+    borderRadius: 12,
+    padding: "24px 32px",
+    minWidth: 120,
+    minHeight: 60,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     fontFamily: "monospace",
-    letterSpacing: 2,
-    textAnchor: "middle",
-    dominantBaseline: "middle",
-    opacity: 0.8,
+    fontSize: 16,
+    color: accent,
+    letterSpacing: 1.5,
+    fontWeight: 600,
+    boxShadow: "0 2px 8px #0002",
   };
-
-  // SVG size
-  const size = 260;
-  const r = 100;
-  const cx = size / 2;
-  const cy = size / 2;
-  const innerR = 40;
+  const labelStyle: React.CSSProperties = {
+    fontSize: 12,
+    color: line,
+    opacity: 0.7,
+    marginBottom: 6,
+    letterSpacing: 2,
+    fontWeight: 400,
+  };
 
   return (
     <div
       style={{
         background: bg,
         borderRadius: 16,
-        padding: 24,
+        padding: 32,
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        width: size + 48,
+        gap: 0,
+        width: "100%",
+        maxWidth: 1200,
         margin: "0 auto",
       }}
     >
-      <svg width={size} height={size} style={{ display: "block" }}>
-        {/* Outer circle */}
-        <circle
-          cx={cx}
-          cy={cy}
-          r={r}
-          fill="none"
-          stroke={line}
-          strokeWidth={1}
-        />
-        {/* Inner circle */}
-        <circle
-          cx={cx}
-          cy={cy}
-          r={innerR}
-          fill="none"
-          stroke={line}
-          strokeWidth={1}
-        />
-        {/* Sectors */}
-        {sectors.map((sector, i) => {
-          const startAngle = i * sectorAngle;
-          const endAngle = (i + 1) * sectorAngle;
-          return (
-            <path
-              key={sector.key}
-              d={describeArc(cx, cy, r, startAngle, endAngle)}
-              fill="#232325"
-              stroke={accent}
-              strokeWidth={i === 0 ? 2 : 1}
-              opacity={0.18 + 0.18 * i}
-            />
-          );
-        })}
-        {/* Crosshair lines */}
-        <line
-          x1={cx}
-          y1={cy - r}
-          x2={cx}
-          y2={cy + r}
-          stroke={line}
-          strokeWidth={0.5}
-          opacity={0.3}
-        />
-        <line
-          x1={cx - r}
-          y1={cy}
-          x2={cx + r}
-          y2={cy}
-          stroke={line}
-          strokeWidth={0.5}
-          opacity={0.3}
-        />
-        {/* Center cross */}
-        <line
-          x1={cx - 8}
-          y1={cy}
-          x2={cx + 8}
-          y2={cy}
-          stroke={accent}
-          strokeWidth={1}
-        />
-        <line
-          x1={cx}
-          y1={cy - 8}
-          x2={cx}
-          y2={cy + 8}
-          stroke={accent}
-          strokeWidth={1}
-        />
-        {/* Labels */}
-        {sectors.map((sector, i) => {
-          // Place label at the middle angle of the sector, outside the circle
-          const angle = (i + 0.5) * sectorAngle;
-          const labelPos = polarToCartesian(cx, cy, r + 36, angle);
-          return (
-            <text
-              key={sector.key + "-label"}
-              x={labelPos.x}
-              y={labelPos.y}
-              style={labelStyle}
-            >
-              {sector.label?.toUpperCase()}
-            </text>
-          );
-        })}
-      </svg>
       <div
         style={{
-          color: line,
-          fontSize: 13,
-          opacity: 0.5,
-          marginTop: 16,
-          letterSpacing: 2,
-          fontFamily: "monospace",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
         }}
       >
-        {sectors.map((sector, i) => (
-          <span key={sector.key + "-desc"} style={{ marginRight: 18 }}>
-            {`0${i + 1}. ${sector.key.toUpperCase()}`}
-          </span>
-        ))}
+        {/* Initiative */}
+        <div style={{ ...boxStyle, minWidth: 220 }}>
+          <span style={labelStyle}>INITIATIVE</span>
+          <span>{initiative?.name?.toUpperCase() || "-"}</span>
+        </div>
+        {/* Arrow 1 */}
+        <svg width="60" height="24" style={{ margin: "0 8px" }}>
+          <line
+            x1="0"
+            y1="12"
+            x2="48"
+            y2="12"
+            stroke={line}
+            strokeWidth="2"
+            strokeDasharray="4,4"
+          />
+          <polygon points="48,6 60,12 48,18" fill={line} />
+        </svg>
+        {/* Project */}
+        <div style={{ ...boxStyle, minWidth: 220 }}>
+          <span style={labelStyle}>PROJECT</span>
+          <span>{project?.name?.toUpperCase() || "-"}</span>
+        </div>
+        {/* Arrow 2 */}
+        <svg width="60" height="24" style={{ margin: "0 8px" }}>
+          <line
+            x1="0"
+            y1="12"
+            x2="48"
+            y2="12"
+            stroke={line}
+            strokeWidth="2"
+            strokeDasharray="4,4"
+          />
+          <polygon points="48,6 60,12 48,18" fill={line} />
+        </svg>
+        {/* Issue */}
+        <div style={{ ...boxStyle, minWidth: 220 }}>
+          <span style={labelStyle}>ISSUE</span>
+          <span>{issue.title?.toUpperCase() || issue.id}</span>
+        </div>
       </div>
     </div>
   );
