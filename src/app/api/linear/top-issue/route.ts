@@ -170,6 +170,13 @@ async function getDetailsFromIssue({
         id,
         url,
         title
+        customerTicketCount
+        priority
+        prioritySortOrder
+        state {
+          name
+          type
+        }
         assignee {
           id,
           avatarUrl
@@ -181,13 +188,19 @@ async function getDetailsFromIssue({
           slugId
           icon
           url
+          status {
+            id,
+            name
+            type
+          }
           initiatives {
             nodes {
               name
               icon
+              url
               id
               slugId
-              url
+              status
             }
           }
         }

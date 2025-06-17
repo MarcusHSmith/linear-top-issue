@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import WorkspaceSection from "./WorkspaceSection";
 import Image from "next/image";
-import TopIssueVisualizer from "./TopIssueBox";
+import TopIssueVisualizer from "./components/TopIssueBox";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -68,7 +68,7 @@ export default async function Home() {
             {/* Show TopIssueVisualizer for local development */}
             <div className="mt-8">
               <TopIssueVisualizer
-                topIssue={{} as import("./TopIssueBox").TopIssue}
+                topIssue={{} as import("./components/TopIssueBox").TopIssue}
               />
             </div>
           </>

@@ -1,15 +1,22 @@
+// This file has been moved to src/app/components/TopIssueBox.tsx
+
 import React from "react";
+import IconDisplay from "./IconDisplay";
 
 interface Initiative {
   id: string;
   name: string;
   slugId?: string;
+  icon?: string;
+  url?: string;
 }
 
 interface Project {
   id: string;
   name: string;
   slugId?: string;
+  icon?: string;
+  url?: string;
   initiatives?: { nodes: Initiative[] };
 }
 
@@ -18,6 +25,8 @@ interface Issue {
   title?: string;
   name?: string;
   project?: Project;
+  url?: string;
+  assignee?: string | null;
 }
 
 export type TopIssue = {
@@ -36,16 +45,23 @@ export default function TopIssueVisualizer({
     detailsFromIssue: {
       issue: {
         id: "e553f28d-c265-4ff7-b5d7-e72661b78937",
+        url: "https://linear.app/lineartopissue/issue/LIN-15/create-table-for-top-issue-users",
+        title: "Create table for `top_issue_users`",
+        assignee: null,
         project: {
           name: "Create a shared Db for user info",
           id: "6a1c006d-cdcd-488a-a49d-a18ee120f094",
           slugId: "4129dd050a3a",
+          icon: ":sleeping:",
+          url: "https://linear.app/lineartopissue/project/create-a-shared-db-for-user-info-4129dd050a3a",
           initiatives: {
             nodes: [
               {
                 name: "Store User info in db",
+                icon: "Bitcoin",
                 id: "019ff3f6-b9a6-44d1-a350-e1a31fe070cb",
                 slugId: "32c08c63ef57",
+                url: "https://linear.app/lineartopissue/initiative/store-user-info-in-db-32c08c63ef57",
               },
             ],
           },
@@ -91,6 +107,46 @@ export default function TopIssueVisualizer({
     fontWeight: 400,
   };
 
+  // Helper to render a box, optionally as a link
+  function Box({
+    label,
+    value,
+    url,
+    icon,
+  }: {
+    label: string;
+    value: string;
+    url?: string;
+    icon?: string;
+  }) {
+    const content = (
+      <>
+        <span style={labelStyle}>{label}</span>
+        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <IconDisplay icon={icon} />
+          {value}
+        </span>
+      </>
+    );
+    return url ? (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          ...boxStyle,
+          minWidth: 220,
+          textDecoration: "none",
+          cursor: "pointer",
+        }}
+      >
+        {content}
+      </a>
+    ) : (
+      <div style={{ ...boxStyle, minWidth: 220 }}>{content}</div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -117,10 +173,12 @@ export default function TopIssueVisualizer({
         }}
       >
         {/* Initiative */}
-        <div style={{ ...boxStyle, minWidth: 220 }}>
-          <span style={labelStyle}>INITIATIVE</span>
-          <span>{initiative?.name?.toUpperCase() || "-"}</span>
-        </div>
+        <Box
+          label="INITIATIVE"
+          value={initiative?.name?.toUpperCase() || "-"}
+          url={initiative?.url}
+          icon={initiative?.icon}
+        />
         {/* Arrow 1 */}
         <svg width="60" height="24" style={{ margin: "0 8px" }}>
           <line
@@ -135,10 +193,12 @@ export default function TopIssueVisualizer({
           <polygon points="48,6 60,12 48,18" fill={line} />
         </svg>
         {/* Project */}
-        <div style={{ ...boxStyle, minWidth: 220 }}>
-          <span style={labelStyle}>PROJECT</span>
-          <span>{project?.name?.toUpperCase() || "-"}</span>
-        </div>
+        <Box
+          label="PROJECT"
+          value={project?.name?.toUpperCase() || "-"}
+          url={project?.url}
+          icon={project?.icon}
+        />
         {/* Arrow 2 */}
         <svg width="60" height="24" style={{ margin: "0 8px" }}>
           <line
@@ -153,10 +213,11 @@ export default function TopIssueVisualizer({
           <polygon points="48,6 60,12 48,18" fill={line} />
         </svg>
         {/* Issue */}
-        <div style={{ ...boxStyle, minWidth: 220 }}>
-          <span style={labelStyle}>ISSUE</span>
-          <span>{issue.title?.toUpperCase() || issue.id}</span>
-        </div>
+        <Box
+          label="ISSUE"
+          value={(issue.title || issue.name || issue.id).toUpperCase()}
+          url={issue.url}
+        />
       </div>
     </div>
   );

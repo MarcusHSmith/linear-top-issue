@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useTopIssue } from "../hooks/useTopIssue";
-import TopIssueVisualizer from "./TopIssueBox";
+import TopIssueVisualizer from "./components/TopIssueBox";
 
 export default function WorkspaceSection({
   user,
@@ -69,7 +69,7 @@ export default function WorkspaceSection({
             topIssue !== null &&
             "detailsFromIssue" in topIssue ? (
             <TopIssueVisualizer
-              topIssue={topIssue as import("./TopIssueBox").TopIssue}
+              topIssue={topIssue as import("./components/TopIssueBox").TopIssue}
             />
           ) : (
             <span className="text-neutral-400">No top issue found</span>
