@@ -18,7 +18,6 @@ export default function WorkspaceSection({
     error: errorTopIssue,
   } = useTopIssue();
 
-  console.log("WorkspaceSection :: topIssue", topIssue);
   console.log(
     "WorkspaceSection :: topIssue",
     JSON.stringify(topIssue, null, 2)

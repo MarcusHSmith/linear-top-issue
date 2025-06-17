@@ -3,12 +3,30 @@
 import React from "react";
 import IconDisplay from "./IconDisplay";
 
+interface State {
+  name: string;
+  type: string;
+}
+
+interface Assignee {
+  id: string;
+  avatarUrl: string;
+  displayName: string;
+}
+
 interface Initiative {
   id: string;
   name: string;
   slugId?: string;
   icon?: string;
   url?: string;
+  status?: string;
+}
+
+interface ProjectStatus {
+  id: string;
+  name: string;
+  type: string;
 }
 
 interface Project {
@@ -17,6 +35,7 @@ interface Project {
   slugId?: string;
   icon?: string;
   url?: string;
+  status?: ProjectStatus;
   initiatives?: { nodes: Initiative[] };
 }
 
@@ -26,7 +45,11 @@ interface Issue {
   name?: string;
   project?: Project;
   url?: string;
-  assignee?: string | null;
+  assignee?: Assignee | null;
+  customerTicketCount?: number;
+  priority?: number;
+  prioritySortOrder?: number;
+  state?: State;
 }
 
 export type TopIssue = {
@@ -47,21 +70,39 @@ export default function TopIssueVisualizer({
         id: "e553f28d-c265-4ff7-b5d7-e72661b78937",
         url: "https://linear.app/lineartopissue/issue/LIN-15/create-table-for-top-issue-users",
         title: "Create table for `top_issue_users`",
-        assignee: null,
+        customerTicketCount: 0,
+        priority: 0,
+        prioritySortOrder: -3880.77,
+        state: {
+          name: "Todo",
+          type: "unstarted",
+        },
+        assignee: {
+          id: "07cad469-84c8-4b12-b5fb-5c092e9039f2",
+          avatarUrl:
+            "https://public.linear.app/07cad469-84c8-4b12-b5fb-5c092e9039f2/bb056e4f-ed67-419e-8cfc-8162ca144ac7",
+          displayName: "marcus",
+        },
         project: {
           name: "Create a shared Db for user info",
           id: "6a1c006d-cdcd-488a-a49d-a18ee120f094",
           slugId: "4129dd050a3a",
           icon: ":sleeping:",
           url: "https://linear.app/lineartopissue/project/create-a-shared-db-for-user-info-4129dd050a3a",
+          status: {
+            id: "02e969ed-6f86-44dd-a159-8dd1ffbb5af9",
+            name: "Backlog",
+            type: "backlog",
+          },
           initiatives: {
             nodes: [
               {
                 name: "Store User info in db",
                 icon: "Bitcoin",
+                url: "https://linear.app/lineartopissue/initiative/store-user-info-in-db-32c08c63ef57",
                 id: "019ff3f6-b9a6-44d1-a350-e1a31fe070cb",
                 slugId: "32c08c63ef57",
-                url: "https://linear.app/lineartopissue/initiative/store-user-info-in-db-32c08c63ef57",
+                status: "Active",
               },
             ],
           },

@@ -46,29 +46,33 @@ async function getTopProjectsFromInitiatives({
   const graphQLClient = client.client;
   graphQLClient.setHeader("my-header", "value");
 
-  // TODO filter by status
   const initiativesQuery = await graphQLClient
     .rawRequest(
       `
-  query Initiatives {
-    initiatives {
-      nodes {
-        icon
-        id
-        name
-        projects {
-          nodes {
-            status {
+    query Initiatives {
+      initiatives(first: 3, orderBy: updatedAt, includeArchived: false, filter:  {
+        status: {
+          notContains: "Completed"
+        }
+      }) {
+        nodes {
+          icon
+          id
+          name
+          projects(first: 3, includeArchived: false, sort: {
+          status: {order: Ascending}
+        }) {
+            nodes {
+              status {
+                id
+              }
+              name
               id
             }
-            name
-            id
           }
         }
       }
     }
-  }
-
   `,
       {}
     )
@@ -108,14 +112,34 @@ async function getTopIssuesFromProjects({
   const graphQLClient = client.client;
   graphQLClient.setHeader("my-header", "value");
 
-  // TODO filter issues by status
-  const issuesQuery = await graphQLClient
-    .rawRequest(
-      `
-    query Projects($projectIds: [ID!]!) {
-      projects(filter: {id: {in: $projectIds}}) {
+  // Conditionally build the filter string and variables
+  const filterString =
+    projectIds && projectIds.length > 0
+      ? "filter: {id: {in: $projectIds}}, "
+      : "";
+  const variables = projectIds && projectIds.length > 0 ? { projectIds } : {};
+
+  const query = `
+    query Projects${
+      projectIds && projectIds.length > 0 ? "($projectIds: [ID!]!)" : ""
+    } {
+      projects(first: 3, ${filterString}includeArchived: false, sort: {
+        status: {order: Ascending}
+      }) {
         nodes {
-          issues(first: 3) {
+          name
+          status {
+            type
+            position
+            name
+          }
+          issues(first: 3, filter:  {
+             state:  {
+                type:  {
+                   in: ["unstarted", "started"]
+                }
+             }
+          }, orderBy: updatedAt) {
             nodes {
               id
             }
@@ -123,9 +147,10 @@ async function getTopIssuesFromProjects({
         }
       }
     }
-    `,
-      { projectIds }
-    )
+  `;
+
+  const issuesQuery = await graphQLClient
+    .rawRequest(query, variables)
     .then((res) => {
       return res.data;
     })
@@ -150,6 +175,49 @@ async function getTopIssuesFromProjects({
   console.log("GET /api/linear/top-issue :: topIssueIds", topIssueIds);
 
   return topIssueIds;
+}
+
+async function getIssuesWithoutContext({ client }: { client: LinearClient }) {
+  const graphQLClient = client.client;
+  graphQLClient.setHeader("my-header", "value");
+
+  const issueQuery = await graphQLClient
+    .rawRequest(
+      `
+    query IssuesWithoutContext { 
+      issues(first: 3, filter:  {
+          state:  {
+            type:  {
+                in: ["unstarted", "started"]
+            }
+          }
+      }, orderBy: updatedAt) {
+        nodes {
+          id
+        }
+      }
+    }
+    `,
+      {}
+    )
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      console.log("GET /api/linear/top-issue issueQuery :: err", err);
+      return err;
+    });
+
+  console.log(
+    "GET /api/linear/top-issue :: issueQuery",
+    JSON.stringify(issueQuery, null, 2)
+  );
+
+  return (
+    issueQuery as {
+      issues: { nodes: Array<{ id: string }> };
+    }
+  ).issues.nodes.map((issue) => issue.id);
 }
 
 async function getDetailsFromIssue({
@@ -192,6 +260,7 @@ async function getDetailsFromIssue({
             id,
             name
             type
+            position
           }
           initiatives {
             nodes {
@@ -262,21 +331,31 @@ export async function GET() {
       JSON.stringify(topIssuesFromProjects, null, 2)
     );
 
+    let targetIssueId = null;
+
     if (topIssuesFromProjects.length === 0) {
-      return NextResponse.json(
-        { error: "No top issues found" },
-        { status: 404 }
+      const issuesWithoutContext = await getIssuesWithoutContext({ client });
+      console.log(
+        "GET /api/linear/top-issue :: issuesWithoutContext",
+        JSON.stringify(issuesWithoutContext, null, 2)
       );
+      if (issuesWithoutContext.length > 0) {
+        targetIssueId = issuesWithoutContext[0];
+      } else {
+        return NextResponse.json(
+          { error: "No top issues found" },
+          { status: 404 }
+        );
+      }
+    } else {
+      targetIssueId = topIssuesFromProjects[0];
     }
 
-    console.log(
-      "GET /api/linear/top-issue :: topIssuesFromProjects[0]",
-      topIssuesFromProjects[0]
-    );
+    console.log("GET /api/linear/top-issue :: targetIssueId", targetIssueId);
 
     const detailsFromIssue = await getDetailsFromIssue({
       client,
-      issueId: topIssuesFromProjects[0],
+      issueId: targetIssueId,
     });
     console.log(
       "GET /api/linear/top-issue :: detailsFromIssue",
