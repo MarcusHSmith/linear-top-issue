@@ -20,6 +20,12 @@ export default function WorkspaceSection({
     error: errorTopIssue,
   } = useTopIssue();
 
+  console.log("WorkspaceSection :: topIssue", topIssue);
+  console.log(
+    "WorkspaceSection :: topIssue",
+    JSON.stringify(topIssue, null, 2)
+  );
+
   return (
     <>
       <div className="flex items-center gap-4 mb-4">
