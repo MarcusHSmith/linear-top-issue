@@ -22,6 +22,7 @@ async function getTeams(client: LinearClient) {
                   name
                   displayName
                   avatarUrl
+                  url
                 }
               }
             }
@@ -48,6 +49,7 @@ async function getTeams(client: LinearClient) {
             email: string;
             displayName: string;
             avatarUrl: string;
+            url: string;
           }[];
         };
       }[];
@@ -273,9 +275,9 @@ async function getDetailsFromIssue({
           type
         }
         assignee {
-          id,
           avatarUrl
           displayName
+          url
         }
         project {
           name
@@ -363,28 +365,17 @@ export async function GET() {
     const topProjectIdsFromInitiatives = await getTopProjectsFromInitiatives({
       client,
     });
-    console.log(
-      "GET /api/linear/top-issue :: topProjectIdsFromInitiatives",
-      JSON.stringify(topProjectIdsFromInitiatives, null, 2)
-    );
 
     const topIssuesFromProjects = await getTopIssuesFromProjects({
       client,
       projectIds: topProjectIdsFromInitiatives,
     });
-    console.log(
-      "GET /api/linear/top-issue :: topIssuesFromProjects",
-      JSON.stringify(topIssuesFromProjects, null, 2)
-    );
 
     let targetIssueId = null;
 
     if (topIssuesFromProjects.length === 0) {
       const issuesWithoutContext = await getIssuesWithoutContext({ client });
-      console.log(
-        "GET /api/linear/top-issue :: issuesWithoutContext",
-        JSON.stringify(issuesWithoutContext, null, 2)
-      );
+
       if (issuesWithoutContext.length > 0) {
         targetIssueId = issuesWithoutContext[0];
       } else {
@@ -396,8 +387,6 @@ export async function GET() {
     } else {
       targetIssueId = topIssuesFromProjects[0];
     }
-
-    console.log("GET /api/linear/top-issue :: targetIssueId", targetIssueId);
 
     const detailsFromIssue = await getDetailsFromIssue({
       client,
