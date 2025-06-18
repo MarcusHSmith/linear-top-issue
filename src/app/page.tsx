@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import WorkspaceSection from "./WorkspaceSection";
 import Image from "next/image";
-import TopIssueVisualizer from "./components/TopIssueBox";
+import NonLoggedInHome from "./components/NonLoggedInHome";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -54,22 +54,9 @@ export default async function Home() {
           />
         ) : (
           <>
-            <a
-              href="/api/auth/linear"
-              className="mb-8 px-8 py-3 rounded-full bg-black text-white font-bold text-lg shadow-lg hover:bg-neutral-900 transition-colors border border-white border-opacity-10"
-              style={{ letterSpacing: 1 }}
-            >
-              Connect Linear
-            </a>
-            {/* Show TopIssueVisualizer for local development */}
-            <div className="mt-8">
-              <TopIssueVisualizer
-                topIssue={{} as import("./components/TopIssueBox").TopIssue}
-              />
-            </div>
+            <NonLoggedInHome />
           </>
         )}
-        {/* Add your custom content here */}
       </main>
       <footer className="w-full flex justify-center mt-8">
         <a

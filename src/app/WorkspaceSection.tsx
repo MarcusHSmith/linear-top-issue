@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useTopIssue } from "../hooks/useTopIssue";
 import TopIssueVisualizer from "./components/TopIssueBox";
+import ConnectLinearButton from "./components/ConnectLinearButton";
 
 export default function WorkspaceSection({
   user,
@@ -75,13 +76,7 @@ export default function WorkspaceSection({
           )}
         </div>
       </div>
-      <a
-        href="/api/auth/linear"
-        className="mb-2 px-6 py-2 rounded-full bg-black text-white font-bold text-base shadow-lg hover:bg-neutral-900 transition-colors border border-white border-opacity-10"
-        style={{ letterSpacing: 1 }}
-      >
-        Change Linear Workspace
-      </a>
+      <ConnectLinearButton />
       <div className="text-xs text-neutral-400 max-w-xs text-center mb-2">
         To connect a different workspace, switch workspaces in Linear before
         authorizing.
