@@ -15,13 +15,9 @@ export async function storeUsers({
     avatar_url?: string;
   }[];
 }) {
-  console.log("storeUsers :: users", JSON.stringify(users, null, 2));
-  // Upsert users into the 'linear_top_issue_users' table
   const { data, error } = await supabase
     .from("linear_top_issue_users")
     .upsert(users, { onConflict: "id" })
     .select();
-  console.log("storeUsers :: data", JSON.stringify(data, null, 2));
-  console.log("storeUsers :: error", JSON.stringify(error, null, 2));
   return { data, error };
 }

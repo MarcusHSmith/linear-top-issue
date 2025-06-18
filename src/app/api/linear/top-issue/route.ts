@@ -35,7 +35,6 @@ async function getTeams(client: LinearClient) {
       return res.data;
     })
     .catch((err) => {
-      console.log("GET /api/linear/top-issue team :: err", err);
       return err;
     });
   return teams as {
@@ -99,7 +98,6 @@ async function getTopProjectsFromInitiatives({
       return res.data;
     })
     .catch((err) => {
-      console.log("GET /api/linear/top-issue initiativesQuery :: err", err);
       return err;
     });
 
@@ -113,7 +111,6 @@ async function getTopProjectsFromInitiatives({
       };
     }
   ).initiatives?.nodes?.flatMap((initiative) => {
-    console.log("initiative ++", initiative);
     return initiative.projects?.nodes?.map((project) => project.id);
   });
 
@@ -127,7 +124,6 @@ async function getTopIssuesFromProjects({
   client: LinearClient;
   projectIds: string[];
 }) {
-  console.log("getTopIssuesFromProjects :: projectIds", projectIds);
   const graphQLClient = client.client;
   graphQLClient.setHeader("my-header", "value");
 
@@ -175,14 +171,8 @@ async function getTopIssuesFromProjects({
       return res.data;
     })
     .catch((err) => {
-      console.log("GET /api/linear/top-issue issuesQuery :: err", err);
       return err;
     });
-
-  console.log(
-    "GET /api/linear/top-issue :: issuesQuery",
-    JSON.stringify(issuesQuery, null, 2)
-  );
 
   const topIssueIds = (
     issuesQuery as {
@@ -195,8 +185,6 @@ async function getTopIssuesFromProjects({
   ).projects.nodes
     .sort((a, b) => b.issues.nodes.length - a.issues.nodes.length)
     .flatMap((project) => project.issues.nodes.map((issue) => issue.id));
-
-  console.log("GET /api/linear/top-issue :: topIssueIds", topIssueIds);
 
   return topIssueIds;
 }
@@ -229,14 +217,8 @@ async function getIssuesWithoutContext({ client }: { client: LinearClient }) {
       return res.data;
     })
     .catch((err) => {
-      console.log("GET /api/linear/top-issue issueQuery :: err", err);
       return err;
     });
-
-  console.log(
-    "GET /api/linear/top-issue :: issueQuery",
-    JSON.stringify(issueQuery, null, 2)
-  );
 
   const sortedIssues = (
     issueQuery as {
@@ -309,14 +291,8 @@ async function getDetailsFromIssue({
       return res.data;
     })
     .catch((err) => {
-      console.log("GET /api/linear/top-issue issueQuery :: err", err);
       return err;
     });
-
-  console.log(
-    "GET /api/linear/top-issue :: issueQuery",
-    JSON.stringify(issueQuery, null, 2)
-  );
 
   return issueQuery;
 }

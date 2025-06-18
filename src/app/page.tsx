@@ -11,7 +11,6 @@ export default async function Home() {
   let user = null;
   try {
     const url = `${process.env.NEXT_PUBLIC_SITE_URL || ""}/api/linear/get-user`;
-    console.log("GET from app/page.tsx :: url", url);
     const res = await fetch(url, {
       headers: {
         Cookie: cookieStore
@@ -22,12 +21,9 @@ export default async function Home() {
       cache: "no-store",
     });
     if (res.ok) {
-      console.log("GET from app/page.tsx :: res.ok");
       const data = await res.json();
-      console.log("GET from app/page.tsx :: data", data);
       user = { name: data.name, avatarUrl: data.avatarUrl };
     } else {
-      console.log("GET from app/page.tsx :: res.ok", res.ok);
     }
   } catch (error) {
     console.log("GET from app/page.tsx :: error", error);
