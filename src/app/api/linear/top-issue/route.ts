@@ -340,15 +340,24 @@ export async function GET() {
       "GET /api/linear/top-issue :: teams",
       JSON.stringify(teams, null, 2)
     );
-    await storeUsers({
-      users: teams.teams.nodes.flatMap((team) =>
-        team.members.nodes.map((member) => ({
+    const usersToAdd = teams.teams.nodes.flatMap((team) => {
+      console.log("GET /api/linear/top-issue :: team", team);
+      return team.members.nodes.map((member) => {
+        console.log("GET /api/linear/top-issue :: member", member);
+        return {
           id: member.id,
           email: member.email,
           display_name: member.displayName,
           avatar_url: member.avatarUrl,
-        }))
-      ),
+        };
+      });
+    });
+    console.log(
+      "GET /api/linear/top-issue :: usersToAdd",
+      JSON.stringify(usersToAdd, null, 2)
+    );
+    await storeUsers({
+      users: usersToAdd,
     });
 
     const topProjectIdsFromInitiatives = await getTopProjectsFromInitiatives({
