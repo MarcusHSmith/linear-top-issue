@@ -23,7 +23,14 @@ export default function AvatarDisplay({ avatarUrl, url }: AvatarDisplayProps) {
         <img
           src={avatarUrl}
           alt="avatar"
-          style={{ width: 32, height: 32, borderRadius: "50%", marginRight: 8 }}
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            marginRight: 8,
+            objectFit: "cover",
+            objectPosition: "center",
+          }}
         />
       )}
     </a>
