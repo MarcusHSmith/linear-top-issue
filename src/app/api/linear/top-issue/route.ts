@@ -282,7 +282,6 @@ async function getDetailsFromIssue({
         project {
           name
           id
-          slugId
           icon
           url
           status {
@@ -297,7 +296,6 @@ async function getDetailsFromIssue({
               icon
               url
               id
-              slugId
               status
             }
           }
@@ -338,14 +336,8 @@ export async function GET() {
     const client = new LinearClient({ accessToken: token });
 
     const teams = await getTeams(client);
-    console.log(
-      "GET /api/linear/top-issue :: teams",
-      JSON.stringify(teams, null, 2)
-    );
     const usersToAdd = teams.teams.nodes.flatMap((team) => {
-      console.log("GET /api/linear/top-issue :: team", team);
       return team.members.nodes.map((member) => {
-        console.log("GET /api/linear/top-issue :: member", member);
         return {
           id: member.id,
           email: member.email,
@@ -354,10 +346,6 @@ export async function GET() {
         };
       });
     });
-    console.log(
-      "GET /api/linear/top-issue :: usersToAdd",
-      JSON.stringify(usersToAdd, null, 2)
-    );
     await storeUsers({
       users: usersToAdd,
     });

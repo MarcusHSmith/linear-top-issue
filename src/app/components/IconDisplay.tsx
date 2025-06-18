@@ -17,17 +17,6 @@ export default function IconDisplay({ icon }: { icon?: string }) {
     // fallback: show the shortcode if not found
     return <span style={{ fontSize: 24, marginRight: 10 }}>{icon}</span>;
   }
-  // Otherwise, treat as asset path or URL
-  return (
-    <img
-      src={icon}
-      alt="icon"
-      style={{
-        width: 24,
-        height: 24,
-        marginRight: 10,
-        verticalAlign: "middle",
-      }}
-    />
-  );
+
+  return null;
 }
