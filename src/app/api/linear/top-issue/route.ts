@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { LinearClient } from "@linear/sdk";
 import { cookies } from "next/headers";
+import { storeUsers } from "@/utils/supabaseClient";
 
 async function getTeams(client: LinearClient) {
   const graphQLClient = client.client;
@@ -9,22 +10,23 @@ async function getTeams(client: LinearClient) {
   const teams = await graphQLClient
     .rawRequest(
       `
-  query Teams {
-    teams {
-      nodes {
-        id
-        name
-        members {
-          nodes {
-            id
-            email
-            name
-            displayName
+        query Teams {
+          teams {
+            nodes {
+              id
+              name
+              members {
+                nodes {
+                  id
+                  email
+                  name
+                  displayName
+                  avatarUrl
+                }
+              }
+            }
           }
         }
-      }
-    }
-  }
   `,
       {}
     )
@@ -35,7 +37,22 @@ async function getTeams(client: LinearClient) {
       console.log("GET /api/linear/top-issue team :: err", err);
       return err;
     });
-  return teams;
+  return teams as {
+    teams: {
+      nodes: {
+        id: string;
+        name: string;
+        members: {
+          nodes: {
+            id: string;
+            email: string;
+            displayName: string;
+            avatarUrl: string;
+          }[];
+        };
+      }[];
+    };
+  };
 }
 
 async function getTopProjectsFromInitiatives({
@@ -323,6 +340,16 @@ export async function GET() {
       "GET /api/linear/top-issue :: teams",
       JSON.stringify(teams, null, 2)
     );
+    await storeUsers({
+      users: teams.teams.nodes.flatMap((team) =>
+        team.members.nodes.map((member) => ({
+          id: member.id,
+          email: member.email,
+          display_name: member.displayName,
+          avatar_url: member.avatarUrl,
+        }))
+      ),
+    });
 
     const topProjectIdsFromInitiatives = await getTopProjectsFromInitiatives({
       client,

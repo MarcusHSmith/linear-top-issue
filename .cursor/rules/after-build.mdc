@@ -1,5 +1,7 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+Rule Name: use-yarn
+Description: All terminal commands, including installs, builds, and runs, must use `yarn` instead of `npm` or other package managers. This applies to all scripts and commands in the project.
