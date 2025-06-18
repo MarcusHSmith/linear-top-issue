@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { metadataConfig } from "@/utils/metadata";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,13 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Linear Top Issue",
-  description: "Find the most important issue for your team",
-  icons: {
-    icon: "images/favicon-white.ico",
-  },
-};
+export const metadata: Metadata = metadataConfig;
 
 export default function RootLayout({
   children,
