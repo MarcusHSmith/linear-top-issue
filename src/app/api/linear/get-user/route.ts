@@ -17,6 +17,7 @@ export async function GET() {
     const client = new LinearClient({ accessToken: token });
     const user = await client.viewer;
 
+    console.log("GET-USER :: StoreUsers", JSON.stringify(user, null, 2));
     await storeUsers({
       users: [
         {

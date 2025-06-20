@@ -322,6 +322,9 @@ export async function GET() {
         };
       });
     });
+
+    console.log("top-issue :: StoreUsers", JSON.stringify(usersToAdd, null, 2));
+
     await storeUsers({
       users: usersToAdd,
     });
