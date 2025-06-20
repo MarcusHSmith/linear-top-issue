@@ -1,75 +1,56 @@
 "use client";
+import React from "react";
 import Image from "next/image";
-import { useTopIssue } from "../hooks/useTopIssue";
-import TopIssueVisualizer from "./components/TopIssueBox";
+import { useTopIssue } from "@/hooks/useTopIssue";
+import { useUser } from "@/hooks/useUser";
+import TopIssueBox from "./components/TopIssueBox";
+import AvatarDisplay from "./components/AvatarDisplay";
 
-export default function WorkspaceSection({
-  user,
+const WorkspaceSection = ({
   workspaceName,
   workspaceUrl,
 }: {
-  user: { name: string; avatarUrl: string };
   workspaceName: string | null;
   workspaceUrl: string | null;
-}) {
-  const {
-    topIssue,
-    loading: loadingTopIssue,
-    error: errorTopIssue,
-  } = useTopIssue();
+}) => {
+  const { topIssue, loading: issueLoading, error: issueError } = useTopIssue();
+  const { user, loading: userLoading, error: userError } = useUser();
+  const loading = issueLoading || userLoading;
 
   return (
-    <>
-      <div className="flex items-center gap-4 mb-4">
-        <Image
-          src={user.avatarUrl}
-          alt={user.name}
-          width={48}
-          height={48}
-          className="rounded-full border border-white/20"
-          unoptimized
-        />
-        <span className="font-bold text-lg">{user.name}</span>
+    <div className="flex flex-col gap-6 w-full max-w-4xl items-center">
+      <div className="flex items-center gap-4 p-3 rounded-lg border border-white/10 w-full justify-between">
+        <a
+          href={workspaceUrl || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+        >
+          <Image
+            src="/images/Linear-Brand-Assets/linear-icon.svg"
+            alt="Linear Workspace Logo"
+            width={24}
+            height={24}
+          />
+          <span className="font-semibold">{workspaceName || "Workspace"}</span>
+        </a>
+        {user && <AvatarDisplay avatarUrl={user.avatarUrl} url={user.url} />}
       </div>
-      {workspaceName && (
-        <div className="mb-2 text-center">
-          <span className="text-sm text-neutral-400">Connected Workspace:</span>
-          <div className="font-semibold">
-            {workspaceUrl ? (
-              <a
-                href={workspaceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline"
-              >
-                {workspaceName}
-              </a>
-            ) : (
-              workspaceName
-            )}
-          </div>
+      {loading && (
+        <div className="text-center p-8">
+          <p>Loading Top Issue...</p>
         </div>
       )}
-      {/* Top Issue Section */}
-      <div className="mb-2 text-center">
-        <span className="text-sm text-neutral-400">Top Issue:</span>
-        <div className="font-semibold">
-          {loadingTopIssue ? (
-            <span className="text-neutral-400">Loading top issue...</span>
-          ) : errorTopIssue ? (
-            <span className="text-red-500">{errorTopIssue}</span>
-          ) : topIssue &&
-            typeof topIssue === "object" &&
-            topIssue !== null &&
-            "detailsFromIssue" in topIssue ? (
-            <TopIssueVisualizer
-              topIssue={topIssue as import("./components/TopIssueBox").TopIssue}
-            />
-          ) : (
-            <span className="text-neutral-400">No top issue found</span>
-          )}
+      {!loading && topIssue && <TopIssueBox topIssue={topIssue} />}
+      {(issueError || userError) && (
+        <div className="text-center p-8 text-red-500">
+          <p>
+            {issueError || userError || "An error occurred."} Please try again.
+          </p>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
-}
+};
+
+export default WorkspaceSection;

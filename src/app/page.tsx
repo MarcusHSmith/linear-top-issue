@@ -5,33 +5,9 @@ import NonLoggedInHome from "./components/NonLoggedInHome";
 
 export default async function Home() {
   const cookieStore = await cookies();
+  const hasToken = cookieStore.has("linear_access_token");
   const workspaceName = cookieStore.get("linear_workspace_name")?.value || null;
   const workspaceUrl = cookieStore.get("linear_workspace_url")?.value || null;
-
-  let user = null;
-  try {
-    const url = `${process.env.NEXT_PUBLIC_SITE_URL || ""}/api/linear/get-user`;
-    console.log("GET from app/page.tsx :: url", url);
-    const res = await fetch(url, {
-      headers: {
-        Cookie: cookieStore
-          .getAll()
-          .map((c) => `${c.name}=${c.value}`)
-          .join("; "),
-      },
-      cache: "no-store",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      console.log(
-        "GET from app/page.tsx :: data",
-        JSON.stringify(data, null, 2)
-      );
-      user = { name: data.name, avatarUrl: data.avatarUrl };
-    }
-  } catch (error) {
-    console.log("GET from app/page.tsx :: error", error);
-  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 font-[family-name:var(--font-geist-sans)]">
@@ -48,9 +24,8 @@ export default async function Home() {
             Linear Top Issue
           </span>
         </header>
-        {user ? (
+        {hasToken ? (
           <WorkspaceSection
-            user={user}
             workspaceName={workspaceName}
             workspaceUrl={workspaceUrl}
           />
