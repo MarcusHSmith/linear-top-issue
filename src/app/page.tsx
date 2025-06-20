@@ -2,36 +2,19 @@ import { cookies } from "next/headers";
 import WorkspaceSection from "./WorkspaceSection";
 import Image from "next/image";
 import NonLoggedInHome from "./components/NonLoggedInHome";
+import { getLinearUser } from "@/utils/linear";
 
 export default async function Home() {
   const cookieStore = await cookies();
   const workspaceName = cookieStore.get("linear_workspace_name")?.value || null;
   const workspaceUrl = cookieStore.get("linear_workspace_url")?.value || null;
 
-  let user = null;
-  try {
-    const url = `${process.env.NEXT_PUBLIC_SITE_URL || ""}/api/linear/get-user`;
-    console.log("GET from app/page.tsx :: url", url);
-    const res = await fetch(url, {
-      headers: {
-        Cookie: cookieStore
-          .getAll()
-          .map((c) => `${c.name}=${c.value}`)
-          .join("; "),
-      },
-      cache: "no-store",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      console.log(
-        "GET from app/page.tsx :: data",
-        JSON.stringify(data, null, 2)
-      );
-      user = { name: data.name, avatarUrl: data.avatarUrl };
-    }
-  } catch (error) {
-    console.log("GET from app/page.tsx :: error", error);
-  }
+  const linearUser = await getLinearUser(cookieStore);
+
+  const user =
+    linearUser && linearUser.avatarUrl
+      ? { name: linearUser.name, avatarUrl: linearUser.avatarUrl }
+      : null;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 font-[family-name:var(--font-geist-sans)]">
