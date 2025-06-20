@@ -4,11 +4,29 @@ import { cookies } from "next/headers";
 import { storeUsers } from "@/utils/supabaseClient";
 
 export async function GET() {
+  console.log("GET-USER :: GET");
   const cookieStore = await cookies();
+
+  // Debug: Log all available cookies
+  const allCookies = cookieStore.getAll();
+  console.log(
+    "GET-USER :: All cookies:",
+    allCookies.map((c) => ({
+      name: c.name,
+      value: c.value ? "present" : "missing",
+    }))
+  );
+
   const token = cookieStore.get("linear_access_token")?.value;
+  console.log("GET-USER :: token", token ? "present" : "missing");
+
   if (!token) {
+    console.log("GET-USER :: No token found - returning 401");
     return NextResponse.json(
-      { error: "No Linear access token found" },
+      {
+        error: "No Linear access token found",
+        debug: { availableCookies: allCookies.map((c) => c.name) },
+      },
       { status: 401 }
     );
   }
@@ -38,6 +56,7 @@ export async function GET() {
       url: user.url,
     });
   } catch (error) {
+    console.log("GET-USER :: Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch user", details: (error as Error).message },
       { status: 500 }

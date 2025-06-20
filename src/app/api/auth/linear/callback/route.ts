@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://linear-top-issue.vercel.app/";
+const SITE_URL = process.env.SITE_URL || "https://linear-top-issue.app/";
 
 export async function GET(req: NextRequest) {
   console.log("SITE_URL", SITE_URL);
-  console.log(
-    "process.env.NEXT_PUBLIC_SITE_URL",
-    process.env.NEXT_PUBLIC_SITE_URL
-  );
+  console.log("process.env.SITE_URL", process.env.SITE_URL);
 
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
@@ -60,26 +56,37 @@ export async function GET(req: NextRequest) {
 
   // Store access token and workspace metadata in cookies (for demo; use secure storage in production)
   const response = NextResponse.redirect(SITE_URL + "?workspaceUpdated=1");
+
+  // Get the domain for cookies - use the current request's hostname
+  const hostname = req.headers.get("host") || "";
+  const isLocalhost =
+    hostname.includes("localhost") || hostname.includes("127.0.0.1");
+  const domain = isLocalhost ? undefined : ".linear-top-issue.app";
+
   response.cookies.set("linear_access_token", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     path: "/",
     sameSite: "lax",
+    domain: domain,
     maxAge: 60 * 60 * 24 * 30, // 30 days
   });
   response.cookies.set("linear_workspace_name", workspaceName, {
     path: "/",
     sameSite: "lax",
+    domain: domain,
     maxAge: 60 * 60 * 24 * 30,
   });
   response.cookies.set("linear_workspace_id", workspaceId, {
     path: "/",
     sameSite: "lax",
+    domain: domain,
     maxAge: 60 * 60 * 24 * 30,
   });
   response.cookies.set("linear_workspace_url", workspaceUrl, {
     path: "/",
     sameSite: "lax",
+    domain: domain,
     maxAge: 60 * 60 * 24 * 30,
   });
   return response;
