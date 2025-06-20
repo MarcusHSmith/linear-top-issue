@@ -58,7 +58,7 @@ yarn install
    Create a `.env.local` file with the following variables:
 
 ```env
-SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 LINEAR_CLIENT_ID=your_linear_client_id
 LINEAR_CLIENT_SECRET=your_linear_client_secret
 SUPABASE_URL=your_supabase_url

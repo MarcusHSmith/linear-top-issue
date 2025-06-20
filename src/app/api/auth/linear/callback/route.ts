@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const SITE_URL = process.env.SITE_URL || "https://linear-top-issue.app/";
-
-console.log("SITE_URL", SITE_URL);
-console.log("process.env.SITE_URL", process.env.SITE_URL);
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://linear-top-issue.vercel.app/";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
