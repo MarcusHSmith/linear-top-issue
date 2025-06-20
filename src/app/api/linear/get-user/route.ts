@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { LinearClient } from "@linear/sdk";
 import { cookies } from "next/headers";
+import { storeUsers } from "@/utils/supabaseClient";
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -15,7 +16,18 @@ export async function GET() {
   try {
     const client = new LinearClient({ accessToken: token });
     const user = await client.viewer;
-    // You can select which fields to return, here we return a subset
+
+    await storeUsers({
+      users: [
+        {
+          id: user.id,
+          email: user.email,
+          display_name: user.displayName,
+          avatar_url: user.avatarUrl,
+        },
+      ],
+    });
+
     return NextResponse.json({
       id: user.id,
       name: user.name,

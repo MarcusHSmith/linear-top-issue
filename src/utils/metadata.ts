@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const siteConfig = {
   name: "Linear Top Issue",
-  description: "Find the most important issue for your team",
+  description: "Find the most important Linear issue for your team",
   url: "https://linear-top-issue.app",
   ogImage: "/images/linear_top_issue_og_image.jpg",
 } as const;

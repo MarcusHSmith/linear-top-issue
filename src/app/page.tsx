@@ -23,7 +23,6 @@ export default async function Home() {
     if (res.ok) {
       const data = await res.json();
       user = { name: data.name, avatarUrl: data.avatarUrl };
-    } else {
     }
   } catch (error) {
     console.log("GET from app/page.tsx :: error", error);
@@ -32,7 +31,6 @@ export default async function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 items-center w-full">
-        {/* Site header with logo and title */}
         <header className="flex items-center gap-3 mb-6 mt-2">
           <Image
             src="/images/logo-white.png"
@@ -45,7 +43,6 @@ export default async function Home() {
             Linear Top Issue
           </span>
         </header>
-        {/* User info or Connect button */}
         {user ? (
           <WorkspaceSection
             user={user}

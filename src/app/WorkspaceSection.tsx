@@ -2,7 +2,6 @@
 import Image from "next/image";
 import { useTopIssue } from "../hooks/useTopIssue";
 import TopIssueVisualizer from "./components/TopIssueBox";
-import ConnectLinearButton from "./components/ConnectLinearButton";
 
 export default function WorkspaceSection({
   user,
@@ -18,11 +17,6 @@ export default function WorkspaceSection({
     loading: loadingTopIssue,
     error: errorTopIssue,
   } = useTopIssue();
-
-  console.log(
-    "WorkspaceSection :: topIssue",
-    JSON.stringify(topIssue, null, 2)
-  );
 
   return (
     <>
@@ -75,11 +69,6 @@ export default function WorkspaceSection({
             <span className="text-neutral-400">No top issue found</span>
           )}
         </div>
-      </div>
-      <ConnectLinearButton />
-      <div className="text-xs text-neutral-400 max-w-xs text-center mb-2">
-        To connect a different workspace, switch workspaces in Linear before
-        authorizing.
       </div>
     </>
   );
