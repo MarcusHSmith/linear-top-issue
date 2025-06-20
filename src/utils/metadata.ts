@@ -3,11 +3,8 @@ import { Metadata } from "next";
 export const siteConfig = {
   name: "Linear Top Issue",
   description: "Find the most important issue for your team",
-  url: "https://linear-top-issue.vercel.app",
+  url: "https://linear-top-issue.app",
   ogImage: "/images/linear_top_issue_og_image.jpg",
-  links: {
-    github: "https://github.com/marcusmth/linear-top-issue",
-  },
 } as const;
 
 export const metadataConfig: Metadata = {
