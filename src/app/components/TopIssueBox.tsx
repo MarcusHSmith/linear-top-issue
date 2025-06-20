@@ -165,50 +165,58 @@ export default function TopIssueVisualizer({
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: initiative ? "space-between" : "center",
           width: "100%",
         }}
       >
-        {/* Initiative */}
-        <Box
-          label="INITIATIVE"
-          value={initiative?.name?.toUpperCase() || "-"}
-          url={initiative?.url}
-          icon={initiative?.icon}
-        />
-        {/* Arrow 1 */}
-        <svg width="60" height="24" style={{ margin: "0 8px" }}>
-          <line
-            x1="0"
-            y1="12"
-            x2="48"
-            y2="12"
-            stroke={line}
-            strokeWidth="2"
-            strokeDasharray="4,4"
-          />
-          <polygon points="48,6 60,12 48,18" fill={line} />
-        </svg>
-        {/* Project */}
-        <Box
-          label="PROJECT"
-          value={project?.name?.toUpperCase() || "-"}
-          url={project?.url}
-          icon={project?.icon}
-        />
-        {/* Arrow 2 */}
-        <svg width="60" height="24" style={{ margin: "0 8px" }}>
-          <line
-            x1="0"
-            y1="12"
-            x2="48"
-            y2="12"
-            stroke={line}
-            strokeWidth="2"
-            strokeDasharray="4,4"
-          />
-          <polygon points="48,6 60,12 48,18" fill={line} />
-        </svg>
+        {initiative && (
+          <>
+            {/* Initiative */}
+            <Box
+              label="INITIATIVE"
+              value={initiative.name.toUpperCase()}
+              url={initiative.url}
+              icon={initiative.icon}
+            />
+            {/* Arrow 1 */}
+            <svg width="60" height="24" style={{ margin: "0 8px" }}>
+              <line
+                x1="0"
+                y1="12"
+                x2="48"
+                y2="12"
+                stroke={line}
+                strokeWidth="2"
+                strokeDasharray="4,4"
+              />
+              <polygon points="48,6 60,12 48,18" fill={line} />
+            </svg>
+          </>
+        )}
+        {project && (
+          <>
+            {/* Project */}
+            <Box
+              label="PROJECT"
+              value={project.name.toUpperCase()}
+              url={project.url}
+              icon={project.icon}
+            />
+            {/* Arrow 2 */}
+            <svg width="60" height="24" style={{ margin: "0 8px" }}>
+              <line
+                x1="0"
+                y1="12"
+                x2="48"
+                y2="12"
+                stroke={line}
+                strokeWidth="2"
+                strokeDasharray="4,4"
+              />
+              <polygon points="48,6 60,12 48,18" fill={line} />
+            </svg>
+          </>
+        )}
         {/* Issue */}
         <Box
           label="ISSUE"
