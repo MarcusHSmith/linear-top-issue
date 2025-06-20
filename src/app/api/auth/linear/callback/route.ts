@@ -3,9 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 const SITE_URL = process.env.SITE_URL || "https://linear-top-issue.app/";
 
 export async function GET(req: NextRequest) {
-  console.log("SITE_URL", SITE_URL);
-  console.log("process.env.SITE_URL", process.env.SITE_URL);
-
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
   const returnedState = searchParams.get("state");

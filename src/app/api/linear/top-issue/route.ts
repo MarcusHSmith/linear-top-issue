@@ -302,19 +302,9 @@ export async function GET() {
 
   // Debug: Log all available cookies
   const allCookies = cookieStore.getAll();
-  console.log(
-    "TOP-ISSUE :: All cookies:",
-    allCookies.map((c) => ({
-      name: c.name,
-      value: c.value ? "present" : "missing",
-    }))
-  );
-
   const token = cookieStore.get("linear_access_token")?.value;
-  console.log("TOP-ISSUE :: token", token ? "present" : "missing");
 
   if (!token) {
-    console.log("TOP-ISSUE :: No token found - returning 401");
     return NextResponse.json(
       {
         error: "No Linear access token found",
@@ -338,8 +328,6 @@ export async function GET() {
         };
       });
     });
-
-    console.log("top-issue :: StoreUsers", JSON.stringify(usersToAdd, null, 2));
 
     await storeUsers({
       users: usersToAdd,
@@ -382,7 +370,6 @@ export async function GET() {
 
     return NextResponse.json({ detailsFromIssue });
   } catch (error) {
-    console.log("TOP-ISSUE :: Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch top issue", details: (error as Error).message },
       { status: 500 }
