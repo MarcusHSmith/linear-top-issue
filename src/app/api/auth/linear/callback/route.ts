@@ -8,9 +8,19 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
+  const returnedState = searchParams.get("state");
 
   if (!code) {
     return NextResponse.json({ error: "Missing code" }, { status: 400 });
+  }
+
+  // Validate state parameter to prevent CSRF attacks
+  const storedState = req.cookies.get("linear_oauth_state")?.value;
+  if (!returnedState || !storedState || returnedState !== storedState) {
+    return NextResponse.json(
+      { error: "Invalid state parameter" },
+      { status: 400 }
+    );
   }
 
   // Exchange code for access token
@@ -56,6 +66,9 @@ export async function GET(req: NextRequest) {
 
   // Store access token and workspace metadata in cookies (for demo; use secure storage in production)
   const response = NextResponse.redirect(SITE_URL + "?workspaceUpdated=1");
+
+  // Clear the state cookie since it's no longer needed
+  response.cookies.delete("linear_oauth_state");
 
   // Get the domain for cookies - use the current request's hostname
   const hostname = req.headers.get("host") || "";
