@@ -4,6 +4,12 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://linear-top-issue.vercel.app/";
 
 export async function GET(req: NextRequest) {
+  console.log("SITE_URL", SITE_URL);
+  console.log(
+    "process.env.NEXT_PUBLIC_SITE_URL",
+    process.env.NEXT_PUBLIC_SITE_URL
+  );
+
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
 
