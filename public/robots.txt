@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://linear-top-issue.app/sitemap.xml 
+Sitemap: https://www.linear-top-issue.app/sitemap.xml 

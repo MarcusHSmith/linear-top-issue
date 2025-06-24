@@ -8,7 +8,7 @@ export const siteConfig = {
 } as const;
 
 export const metadataConfig: Metadata = {
-  metadataBase: new URL(siteConfig.url),
+  metadataBase: new URL("https://www.linear-top-issue.app"),
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
@@ -28,7 +28,7 @@ export const metadataConfig: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: siteConfig.url,
+    url: "https://www.linear-top-issue.app",
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
