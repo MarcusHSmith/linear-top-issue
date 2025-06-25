@@ -7,7 +7,7 @@ Linear Top Issue surfaces the single most important issue in your Linear workspa
 ## Quick links
 
 - 💻 **GitHub repo:** https://github.com/MarcusHSmith/linear-top-issue
-- 👨‍💻 **Marcus Smith:** [marcusmth.com](https://marcusmth.com) · [Twitter @marcusmth](https://twitter.com/marcusmth)
+- 👨‍💻 **Marcus Smith:** [marcusmth.com](https://www.marcusmth.com) · [Twitter @marcusmth](https://twitter.com/marcusmth)
 
 ## Local development
 
