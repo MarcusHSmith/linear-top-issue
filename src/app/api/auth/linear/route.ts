@@ -7,7 +7,7 @@ export async function GET() {
 
   // Generate a random state parameter for CSRF protection
   const state = randomBytes(32).toString("hex");
-  const scope = "read,write";
+  const scope = "read";
 
   const params = new URLSearchParams({
     client_id: clientId!,
