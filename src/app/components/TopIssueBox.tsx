@@ -1,5 +1,3 @@
-// This file has been moved to src/app/components/TopIssueBox.tsx
-
 import React from "react";
 import IconDisplay from "./IconDisplay";
 import AvatarDisplay from "./AvatarDisplay";
