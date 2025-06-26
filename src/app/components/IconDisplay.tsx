@@ -1,5 +1,3 @@
-// This file has been moved to src/app/components/IconDisplay.tsx
-
 import React from "react";
 // @ts-expect-error: No types for emoji-dictionary
 import emoji from "emoji-dictionary";
