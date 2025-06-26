@@ -17,7 +17,7 @@ export default async function Home() {
       : null;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 font-[var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 items-center w-full">
         <header className="flex items-center gap-3 mb-6 mt-2">
           <Image
