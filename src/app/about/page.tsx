@@ -76,7 +76,7 @@ export default function AboutPage() {
           @marcusmth
         </a>
         <a
-          href="https://marcusmth.com"
+          href="https://www.marcusmth.com"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-400 hover:underline"
