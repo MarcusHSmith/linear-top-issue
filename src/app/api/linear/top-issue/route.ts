@@ -35,8 +35,12 @@ async function getTeams(client: LinearClient) {
       return res.data;
     })
     .catch((err) => {
-      return err;
+      console.error("getTeams error", err);
+      return null;
     });
+  if (!teams) {
+    return null;
+  }
   return teams as {
     teams: {
       nodes: {
@@ -98,8 +102,13 @@ async function getTopProjectsFromInitiatives({
       return res.data;
     })
     .catch((err) => {
-      return err;
+      console.error("getTopProjectsFromInitiatives error", err);
+      return null;
     });
+
+  if (!initiativesQuery) {
+    return null;
+  }
 
   const projectIds = (
     initiativesQuery as {
@@ -171,8 +180,13 @@ async function getTopIssuesFromProjects({
       return res.data;
     })
     .catch((err) => {
-      return err;
+      console.error("getTopIssuesFromProjects error", err);
+      return null;
     });
+
+  if (!issuesQuery) {
+    return [];
+  }
 
   const topIssueIds = (
     issuesQuery as {
@@ -217,8 +231,13 @@ async function getIssuesWithoutContext({ client }: { client: LinearClient }) {
       return res.data;
     })
     .catch((err) => {
-      return err;
+      console.error("getIssuesWithoutContext error", err);
+      return null;
     });
+
+  if (!issueQuery) {
+    return [];
+  }
 
   const sortedIssues = (
     issueQuery as {
@@ -291,9 +310,13 @@ async function getDetailsFromIssue({
       return res.data;
     })
     .catch((err) => {
-      return err;
+      console.error("getDetailsFromIssue error", err);
+      return null;
     });
 
+  if (!issueQuery) {
+    return null;
+  }
   return issueQuery;
 }
 
@@ -318,6 +341,10 @@ export async function GET() {
     const client = new LinearClient({ accessToken: token });
 
     const teams = await getTeams(client);
+    if (!teams) {
+      console.error("Failed to fetch teams");
+      return NextResponse.json({ error: "Failed to fetch teams" }, { status: 500 });
+    }
     const usersToAdd = teams.teams.nodes.flatMap((team) => {
       return team.members.nodes.map((member) => {
         return {
@@ -336,16 +363,28 @@ export async function GET() {
     const topProjectIdsFromInitiatives = await getTopProjectsFromInitiatives({
       client,
     });
+    if (!topProjectIdsFromInitiatives) {
+      console.error("Failed to fetch initiatives");
+      return NextResponse.json({ error: "Failed to fetch initiatives" }, { status: 500 });
+    }
 
     const topIssuesFromProjects = await getTopIssuesFromProjects({
       client,
       projectIds: topProjectIdsFromInitiatives,
     });
+    if (!topIssuesFromProjects) {
+      console.error("Failed to fetch project issues");
+      return NextResponse.json({ error: "Failed to fetch project issues" }, { status: 500 });
+    }
 
     let targetIssueId = null;
 
     if (topIssuesFromProjects.length === 0) {
       const issuesWithoutContext = await getIssuesWithoutContext({ client });
+      if (!issuesWithoutContext) {
+        console.error("Failed to fetch issues without context");
+        return NextResponse.json({ error: "Failed to fetch issues" }, { status: 500 });
+      }
 
       if (issuesWithoutContext.length > 0) {
         targetIssueId = issuesWithoutContext[0];
@@ -363,6 +402,10 @@ export async function GET() {
       client,
       issueId: targetIssueId,
     });
+    if (!detailsFromIssue) {
+      console.error("Failed to fetch issue details");
+      return NextResponse.json({ error: "Failed to fetch issue details" }, { status: 500 });
+    }
     console.log(
       "GET /api/linear/top-issue :: detailsFromIssue",
       JSON.stringify(detailsFromIssue, null, 2)
